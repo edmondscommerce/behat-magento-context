@@ -1,5 +1,5 @@
 {
-    "name": "edmondscommerce/behat-magento-context",
+    "name": "edmondscommerce/behat-magento-one-context",
     "description": "A Behat Extension to use with Magento 1.x",
     "keywords": [
         "Behat",
