@@ -1,0 +1,28 @@
+{
+    "name": "edmondscommerce/behat-magento-context",
+    "description": "A Behat Extension to use with Magento 1.x",
+    "keywords": [
+        "Behat",
+        "Testing",
+        "Logging",
+        "Magento",
+        "Magento 1"
+    ],
+    "homepage": "https://www.edmondscommerce.co.uk",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "edmondscommerce",
+            "email": "info@edmondscommerce.co.uk"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "behat/behat": "~3.0",
+    },
+    "autoload": {
+        "psr-4": {
+            "EdmondsCommerce\\BehatMagentoOneContext\\": "src/"
+        }
+    }
+}
