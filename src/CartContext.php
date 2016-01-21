@@ -17,6 +17,27 @@ class CartContext extends AbstractMagentoContext implements Context, SnippetAcce
     }
 
     /**
+     * @param $css
+     *
+     * @throws Exception
+     *
+     * @When /^(?:|I )click on the add to cart button identified by "([^"]*)"$/
+     */
+    public function iClickTheAddToCartButton($css)
+    {
+        $this->_html->iClickOnTheElement($css);
+        $this->_jsEvents->iWaitForAjaxToFinish();
+    }
+
+    /**
+     * @Then I close the cart popup
+     */
+    public function iCloseTheCartPopup()
+    {
+        $this->_html->iClickOnTheElement('.aw-acp-continue');
+    }
+
+    /**
      * @Given /^have an empty cart$/
      */
     public function haveAnEmptyCart()

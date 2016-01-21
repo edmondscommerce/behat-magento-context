@@ -15,6 +15,7 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
     protected $_contextsToInclude = [
         'FeatureContext' => '_mink',
         'EdmondsCommerce\BehatMagentoOneContext\CartContext' => '_cart',
+        'EdmondsCommerce\BehatMagentoOneContext\CheckoutContext' => '_checkout',
         'EdmondsCommerce\BehatHtmlContext\RedirectionContext' => '_redirect',
         'EdmondsCommerce\BehatJavascriptContext\JavascriptEventsContext' => '_jsEvents',
         'EdmondsCommerce\BehatHtmlContext\HTMLContext' => '_html'
@@ -38,6 +39,8 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
     /** @var HTMLContext */
     protected $_html;
 
+    /** @var  CheckoutContext */
+    protected $_checkout;
 
 
     /**
