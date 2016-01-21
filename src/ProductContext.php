@@ -38,7 +38,7 @@ class ProductContext extends AbstractMagentoContext
      */
     public function iAddToCart()
     {
-        $this->_html->iClickOnTheText('Add To Cart');
+        $this->_html->iClickOnTheFirstVisibleText('Add to Cart');
         $this->_jsEvents->iWaitForDocumentReady();
     }
 }
