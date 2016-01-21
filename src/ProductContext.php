@@ -8,33 +8,41 @@ class ProductContext extends AbstractMagentoContext
     /**
      * @var string
      */
-    private $simpleUri = 'default';
+    private $simpleUri;
     /**
      * @var string
      */
-    private $bundleUri = 'default';
+    private $bundleUri;
     /**
      * @var string
      */
-    private $configurableUri = 'default';
+    private $configurableUri;
+
     /**
      * @var string
      */
-    private $categoryUri = 'default';
+    private $groupedUri;
+
+    /**
+     * @var string
+     */
+    private $categoryUri;
 
     /**
      * ProductContext constructor.
      * @param string $categoryUri
      * @param string $simpleUri
      * @param string $bundleUri
+     * @param string $groupedUri
      * @param string $configurableUri
      */
-    public function __construct($categoryUri = null, $simpleUri = null, $bundleUri = null, $configurableUri = null)
+    public function __construct($categoryUri = null, $simpleUri = null, $bundleUri = null, $groupedUri = null, $configurableUri = null)
     {
-        $this->simpleUri = $simpleUri;
-        $this->bundleUri = $bundleUri;
-        $this->configurableUri = $configurableUri;
-        $this->categoryUri = $categoryUri;
+        $this->simpleUri = (empty($simpleUri)) ? 'accessories/eyewear/aviator-sunglasses.html' : $simpleUri;
+        $this->bundleUri = (empty($bundleUri)) ? 'pillow-and-throw-set.html' : $bundleUri;
+        $this->configurableUri = (empty($configurableUri)) ? 'lafayette-convertible-dress.html' : $configurableUri;
+        $this->categoryUri = (empty($categoryUri)) ? 'women/new-arrivals.html' : $categoryUri;
+        $this->groupedUri = (empty($groupedUri)) ? 'vase-set.html' : $groupedUri;
     }
 
     /**
@@ -127,5 +135,13 @@ class ProductContext extends AbstractMagentoContext
     {
         $this->_html->iClickOnTheFirstVisibleText('Add to Cart');
         $this->_jsEvents->iWaitForDocumentReady();
+    }
+
+    /**
+     * @Given /^I am on a grouped product page$/
+     */
+    public function iAmOnAGroupedProductPage()
+    {
+        $this->visitPath('/'.$this->groupedUri);
     }
 }
