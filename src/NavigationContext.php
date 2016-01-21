@@ -5,7 +5,7 @@ use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\MinkExtension\Context\RawMinkContext;
 use Exception;
 
-class BasicPageNavigationContext extends RawMinkContext implements Context, SnippetAcceptingContext
+class NavigationContext extends RawMinkContext implements Context, SnippetAcceptingContext
 {
     /**
      * @When /^(?:|I )click on the element "([^"]*)"$/
