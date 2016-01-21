@@ -14,9 +14,10 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
 
     protected $_contextsToInclude = [
         'FeatureContext' => '_mink',
-        'CartContext' => '_cart',
-        'RedirectContext' => '_redirect',
-        'JavascriptContext' => '_jsEvents'
+        'EdmondsCommerce\BehatMagentoOneContext\CartContext' => '_cart',
+        'EdmondsCommerce\BehatHtmlContext\RedirectionContext' => '_redirect',
+        'EdmondsCommerce\BehatJavascriptContext\JavascriptEventsContext' => '_jsEvents',
+        'EdmondsCommerce\BehatHtmlContext\HTMLContext' => '_html'
     ];
 
     /** @var HTMLContext */
@@ -34,6 +35,11 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
     /** @var JavascriptEventsContext */
     protected $_jsEvents;
 
+    /** @var HTMLContext */
+    protected $_html;
+
+
+
     /**
      * This is used to load in the different contexts so they can be used with in the class
      *
@@ -41,7 +47,7 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
      *
      * @BeforeScenario
      */
-    protected function gatherContexts(BeforeScenarioScope $scope)
+    public function gatherContexts(BeforeScenarioScope $scope)
     {
         $environment = $scope->getEnvironment();
         $contexts = $this->_getArrayOfContexts();

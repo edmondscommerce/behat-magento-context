@@ -31,4 +31,14 @@ class ProductContext extends AbstractMagentoContext
 
         throw new InvalidArgumentException(sprintf('Could not find a product option: "%s"', $option));
     }
+
+    /**
+     * Add the product on the product page to cart, just clicks the add to cart element
+     * @Then /^I add to cart$/
+     */
+    public function iAddToCart()
+    {
+        $this->_html->iClickOnTheText('Add To Cart');
+        $this->_jsEvents->iWaitForDocumentReady();
+    }
 }
