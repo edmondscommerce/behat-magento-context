@@ -13,7 +13,7 @@ class CartContext extends AbstractMagentoContext implements Context, SnippetAcce
      */
     public function iOpenTheMiniCart()
     {
-        $this->_pageNavigation->iClickOnTheElement('.skip-cart');
+        $this->_navigation->iClickOnTheElement('.skip-cart');
     }
 
     /**
