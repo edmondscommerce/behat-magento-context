@@ -5,6 +5,9 @@ use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\MinkExtension\Context\MinkContext;
 use Behat\MinkExtension\Context\RawMinkContext;
+use EdmondsCommerce\BehatHtmlContext\HTMLContext;
+use EdmondsCommerce\BehatHtmlContext\RedirectionContext;
+use EdmondsCommerce\BehatJavascriptContext\JavascriptEventsContext;
 
 abstract class AbstractMagentoContext extends RawMinkContext implements Context, SnippetAcceptingContext
 {
@@ -13,10 +16,10 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
         'FeatureContext' => '_mink',
         'CartContext' => '_cart',
         'RedirectContext' => '_redirect',
-        'JavascriptContext' => '_js'
+        'JavascriptContext' => '_jsEvents'
     ];
 
-    /** @var NavigationContext */
+    /** @var HTMLContext */
     protected $_navigation;
 
     /** @var MinkContext */
@@ -25,11 +28,11 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
     /** @var CartContext */
     protected $_cart;
 
-    /** @var RedirectContext */
+    /** @var RedirectionContext */
     protected $_redirect;
 
-    /** @var JavascriptContext */
-    protected $_js;
+    /** @var JavascriptEventsContext */
+    protected $_jsEvents;
 
     /**
      * This is used to load in the different contexts so they can be used with in the class
