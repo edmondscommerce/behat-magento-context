@@ -21,7 +21,6 @@ class CartContext extends AbstractMagentoContext implements Context, SnippetAcce
      */
     public function haveAnEmptyCart()
     {
-
         $this->visitPath('/checkout/cart');
         $text = $this->getSession()->getPage()->getText();
         if (false !== strpos($text, 'CLEAR SHOPPING CART'))

@@ -3,11 +3,8 @@
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
-use Behat\Mink\Driver\GoutteDriver;
-use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Behat\MinkExtension\Context\MinkContext;
 use Behat\MinkExtension\Context\RawMinkContext;
-use Mage\Customer\Test\Block\Account\Navigation;
 
 abstract class AbstractMagentoContext extends RawMinkContext implements Context, SnippetAcceptingContext
 {
@@ -19,19 +16,19 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
         'JavascriptContext' => '_js'
     ];
 
-    /** @var  Navigation */
+    /** @var NavigationContext */
     protected $_navigation;
 
-    /** @var  MinkContext */
+    /** @var MinkContext */
     protected $_mink;
 
-    /** @var  CartContext */
+    /** @var CartContext */
     protected $_cart;
 
-    /** @var  RedirectContext */
+    /** @var RedirectContext */
     protected $_redirect;
 
-    /** @var  JavascriptContext */
+    /** @var JavascriptContext */
     protected $_js;
 
     /**
