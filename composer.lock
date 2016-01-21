@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a6400055715be0e94a8474638e1190e9",
-    "content-hash": "77972ac786205ea01619d5151ce8b653",
+    "hash": "82e1bb86792da91517907f14a0f672c9",
+    "content-hash": "92b57533e21e8c21d688bba104c764e7",
     "packages": [
         {
             "name": "behat/behat",
@@ -187,17 +187,105 @@
             "time": "2015-09-28 16:26:35"
         },
         {
+            "name": "edmondscommerce/behat-html-context",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/edmondscommerce/behat-html-context.git",
+                "reference": "e18a87bcac1542f1a5987f50276c29519beda197"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/edmondscommerce/behat-html-context/zipball/e18a87bcac1542f1a5987f50276c29519beda197",
+                "reference": "e18a87bcac1542f1a5987f50276c29519beda197",
+                "shasum": ""
+            },
+            "require": {
+                "behat/behat": "~3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "EdmondsCommerce\\BehatHtmlContext\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "edmondscommerce",
+                    "email": "info@edmondscommerce.co.uk"
+                }
+            ],
+            "description": "A Behat Extension for HTML",
+            "homepage": "https://www.edmondscommerce.co.uk",
+            "keywords": [
+                "Behat",
+                "browser",
+                "html",
+                "logging",
+                "testing"
+            ],
+            "time": "2016-01-21 12:27:38"
+        },
+        {
+            "name": "edmondscommerce/behat-javascript-context",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/edmondscommerce/behat-javascript-context.git",
+                "reference": "20ee11415d52f7e53e60b2ba6b36af5c42278e3a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/edmondscommerce/behat-javascript-context/zipball/20ee11415d52f7e53e60b2ba6b36af5c42278e3a",
+                "reference": "20ee11415d52f7e53e60b2ba6b36af5c42278e3a",
+                "shasum": ""
+            },
+            "require": {
+                "behat/behat": "~3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "EdmondsCommerce\\BehatJavascriptContext\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "edmondscommerce",
+                    "email": "info@edmondscommerce.co.uk"
+                }
+            ],
+            "description": "A Behat Extension for HTML",
+            "homepage": "https://www.edmondscommerce.co.uk",
+            "keywords": [
+                "Behat",
+                "browser",
+                "javascript",
+                "logging",
+                "testing"
+            ],
+            "time": "2016-01-21 12:28:56"
+        },
+        {
             "name": "symfony/class-loader",
             "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/class-loader.git",
-                "reference": "239e9832a6fe13e8e0129bb62ae02684b7f0bee8"
+                "reference": "696bc208eaa7292d246475af22f458f545d8eafc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/class-loader/zipball/239e9832a6fe13e8e0129bb62ae02684b7f0bee8",
-                "reference": "239e9832a6fe13e8e0129bb62ae02684b7f0bee8",
+                "url": "https://api.github.com/repos/symfony/class-loader/zipball/696bc208eaa7292d246475af22f458f545d8eafc",
+                "reference": "696bc208eaa7292d246475af22f458f545d8eafc",
                 "shasum": ""
             },
             "require": {
@@ -237,7 +325,7 @@
             ],
             "description": "Symfony ClassLoader Component",
             "homepage": "https://symfony.com",
-            "time": "2016-01-15 09:32:41"
+            "time": "2016-01-20 12:19:44"
         },
         {
             "name": "symfony/config",
@@ -245,12 +333,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/config.git",
-                "reference": "5fc2fc90efaad8febfdf61722abeba369fb0d122"
+                "reference": "8158926b61ecf427ed50da5710f594729845fe86"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/config/zipball/5fc2fc90efaad8febfdf61722abeba369fb0d122",
-                "reference": "5fc2fc90efaad8febfdf61722abeba369fb0d122",
+                "url": "https://api.github.com/repos/symfony/config/zipball/8158926b61ecf427ed50da5710f594729845fe86",
+                "reference": "8158926b61ecf427ed50da5710f594729845fe86",
                 "shasum": ""
             },
             "require": {
@@ -287,7 +375,7 @@
             ],
             "description": "Symfony Config Component",
             "homepage": "https://symfony.com",
-            "time": "2016-01-03 15:35:40"
+            "time": "2016-01-21 10:01:50"
         },
         {
             "name": "symfony/console",
@@ -295,12 +383,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "0360a690902c60a0aeda2b4da0bcf1098ee849ce"
+                "reference": "1710486b6038c47b252630b0f4c220faf90e7f96"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/0360a690902c60a0aeda2b4da0bcf1098ee849ce",
-                "reference": "0360a690902c60a0aeda2b4da0bcf1098ee849ce",
+                "url": "https://api.github.com/repos/symfony/console/zipball/1710486b6038c47b252630b0f4c220faf90e7f96",
+                "reference": "1710486b6038c47b252630b0f4c220faf90e7f96",
                 "shasum": ""
             },
             "require": {
@@ -347,7 +435,7 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2016-01-15 09:32:41"
+            "time": "2016-01-21 10:01:50"
         },
         {
             "name": "symfony/dependency-injection",
@@ -355,12 +443,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dependency-injection.git",
-                "reference": "74d147b2c64c58a7017c17a7c0be5d94afe62532"
+                "reference": "fac9a09467d88c70830347dbd6071be9edb9db94"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/74d147b2c64c58a7017c17a7c0be5d94afe62532",
-                "reference": "74d147b2c64c58a7017c17a7c0be5d94afe62532",
+                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/fac9a09467d88c70830347dbd6071be9edb9db94",
+                "reference": "fac9a09467d88c70830347dbd6071be9edb9db94",
                 "shasum": ""
             },
             "require": {
@@ -406,7 +494,7 @@
             ],
             "description": "Symfony DependencyInjection Component",
             "homepage": "https://symfony.com",
-            "time": "2016-01-16 14:18:33"
+            "time": "2016-01-21 10:01:50"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -474,12 +562,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "ac9ddb864896839f64fdb66eb9c06a4b9e144d23"
+                "reference": "2cb19575f3d04f1da5b4dc35d7fef9562cd9c3f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/ac9ddb864896839f64fdb66eb9c06a4b9e144d23",
-                "reference": "ac9ddb864896839f64fdb66eb9c06a4b9e144d23",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/2cb19575f3d04f1da5b4dc35d7fef9562cd9c3f2",
+                "reference": "2cb19575f3d04f1da5b4dc35d7fef9562cd9c3f2",
                 "shasum": ""
             },
             "require": {
@@ -515,7 +603,7 @@
             ],
             "description": "Symfony Filesystem Component",
             "homepage": "https://symfony.com",
-            "time": "2016-01-13 16:23:43"
+            "time": "2016-01-21 10:01:50"
         },
         {
             "name": "symfony/polyfill-apcu",
@@ -638,12 +726,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/translation.git",
-                "reference": "7ef620c4238860eb6329a3c929f5b4162f1bd3a5"
+                "reference": "6e0a9d85e059226ee08ab8e8ab9a17faee9019b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/translation/zipball/7ef620c4238860eb6329a3c929f5b4162f1bd3a5",
-                "reference": "7ef620c4238860eb6329a3c929f5b4162f1bd3a5",
+                "url": "https://api.github.com/repos/symfony/translation/zipball/6e0a9d85e059226ee08ab8e8ab9a17faee9019b0",
+                "reference": "6e0a9d85e059226ee08ab8e8ab9a17faee9019b0",
                 "shasum": ""
             },
             "require": {
@@ -694,7 +782,7 @@
             ],
             "description": "Symfony Translation Component",
             "homepage": "https://symfony.com",
-            "time": "2016-01-03 15:35:40"
+            "time": "2016-01-21 10:01:50"
         },
         {
             "name": "symfony/yaml",
@@ -702,12 +790,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "82287b794641153ae1837b9288c3ae90cecdf5c4"
+                "reference": "a8940bc022a7af0ce2601dc46376fe9dbee2d9f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/82287b794641153ae1837b9288c3ae90cecdf5c4",
-                "reference": "82287b794641153ae1837b9288c3ae90cecdf5c4",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/a8940bc022a7af0ce2601dc46376fe9dbee2d9f6",
+                "reference": "a8940bc022a7af0ce2601dc46376fe9dbee2d9f6",
                 "shasum": ""
             },
             "require": {
@@ -743,13 +831,16 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2016-01-13 16:23:43"
+            "time": "2016-01-21 10:01:50"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "edmondscommerce/behat-html-context": 20,
+        "edmondscommerce/behat-javascript-context": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
