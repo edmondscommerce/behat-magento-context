@@ -19,14 +19,14 @@ class CustomerContext extends AbstractMagentoContext
      */
     public function iLogIn($email, $password)
     {
-        $this->_javaScriptContext->iWaitForDocumentReady();
+        $this->iWaitForDocumentReady();
         $this->_pageNavigation->iClickOnTheElement('.skip-account');
         $this->_mink->clickLink('Log In');
-        $this->_javaScriptContext->iWaitForDocumentReady();
+        $this->iWaitForDocumentReady();
         $this->_mink->fillField('login[username]', $email);
         $this->_mink->fillField('login[password]', $password);
         $this->_mink->pressButton('Login');
-        $this->_javaScriptContext->iWaitForDocumentReady();
+        $this->iWaitForDocumentReady();
     }
 
     /**

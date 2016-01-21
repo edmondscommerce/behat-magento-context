@@ -3,6 +3,8 @@
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Mink\Driver\GoutteDriver;
+use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Behat\MinkExtension\Context\MinkContext;
 use Behat\MinkExtension\Context\RawMinkContext;
 
@@ -10,7 +12,8 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
 {
 
     protected $_contextsToInclude = [
-        'FeatureContext'             => '_mink'
+        'FeatureContext'             => '_mink',
+        'CartContext' => '_cart'
     ];
 
     /** @var  BasicPageNavigationContext */
@@ -18,6 +21,9 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
 
     /** @var  MinkContext */
     protected $_mink;
+
+    /** @var  CartContext */
+    protected $_cart;
 
     /**
      * This is used to load in the different contexts so they can be used with in the class

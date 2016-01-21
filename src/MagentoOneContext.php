@@ -1,5 +1,7 @@
 <?php namespace EdmondsCommerce\BehatMagentoOneContext;
 
+use Exception;
+
 class MagentoOneContext extends AbstractMagentoContext
 {
 
@@ -14,11 +16,11 @@ class MagentoOneContext extends AbstractMagentoContext
      */
     public function iGoToTheCheckout()
     {
-        $this->_product->iOpenTheMiniCart();
+        $this->_cart->iOpenTheMiniCart();
         $this->_mink->assertPageContainsText('Edit Item');
         $this->_mink->assertPageNotContainsText('You have no items in your shopping cart.');
         $this->_pageNavigation->iClickOnTheElement('.minicart a');
-        $this->_javaScriptContext->iWaitForDocumentReady();
+        $this->iWaitForDocumentReady();
     }
 
     /**
@@ -63,7 +65,7 @@ class MagentoOneContext extends AbstractMagentoContext
     public function iClickTheAddToCartButton($css)
     {
         $this->_pageNavigation->iClickOnTheElement($css);
-        $this->_javaScriptContext->iWaitForAjaxToFinish();
+        $this->iWaitForAjaxToFinish();
     }
 
     /**
@@ -74,14 +76,6 @@ class MagentoOneContext extends AbstractMagentoContext
         $this->_pageNavigation->iClickOnTheElement('.aw-acp-continue');
     }
 
-    /**
-     * @throws Exception
-     * @Then I open the minicart
-     */
-    public function iOpenTheMiniCart()
-    {
-        $this->_pageNavigation->iClickOnTheElement('.skip-cart');
-    }
 
     /**
      * @param $productId
@@ -90,7 +84,7 @@ class MagentoOneContext extends AbstractMagentoContext
     public function iAddProductsToTheCart($productId)
     {
         $this->iAmOnAConfigurableProductPage();
-        $this->_javaScriptContext->iWaitForDocumentReady();
+        $this->iWaitForDocumentReady();
         $this->iClickTheAddToCartButton("#cart_button_$productId button");
         $this->iCloseTheCartPopup();
     }
@@ -101,7 +95,7 @@ class MagentoOneContext extends AbstractMagentoContext
     public function iAddTheBundleProductToTheCart()
     {
         $this->_pageNavigation->iClickOnTheElement('.bundle-add-to-basket');
-        $this->_javaScriptContext->iWaitForAjaxToFinish();
+        $this->iWaitForAjaxToFinish();
         $this->iCloseTheCartPopup();
     }
 
@@ -111,7 +105,7 @@ class MagentoOneContext extends AbstractMagentoContext
     public function iSwitchToPricesIncludingVAT()
     {
         $this->_mink->selectOption('custom_vat_selector','Included');
-        $this->_javaScriptContext->iWaitForDocumentReady();
+        $this->iWaitForDocumentReady();
     }
 
     /**
@@ -120,6 +114,6 @@ class MagentoOneContext extends AbstractMagentoContext
     public function iSwitchToPricesExcludingVAT()
     {
         $this->_mink->selectOption('custom_vat_selector','Excluded');
-        $this->_javaScriptContext->iWaitForDocumentReady();
+        $this->iWaitForDocumentReady();
     }
 }
