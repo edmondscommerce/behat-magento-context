@@ -1,8 +1,6 @@
 <?php namespace EdmondsCommerce\BehatMagentoOneContext;
 
-use Behat\MinkExtension\Context\RawMinkContext;
-
-class JavascriptContext extends RawMinkContext
+class JavascriptContext extends AbstractMagentoContext
 {
 
     /**

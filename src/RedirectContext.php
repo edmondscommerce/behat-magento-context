@@ -2,9 +2,8 @@
 
 use Behat\Mink\Driver\GoutteDriver;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
-use Behat\MinkExtension\Context\RawMinkContext;
 
-class RedirectContext extends RawMinkContext
+class RedirectContext extends AbstractMagentoContext
 {
     public function canIntercept()
     {
