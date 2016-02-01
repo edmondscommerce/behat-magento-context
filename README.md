@@ -17,18 +17,22 @@ default:
     # ...
     suites:
         default:
-            # ...
+        # ...
             contexts:
                 - # ...
                 - EdmondsCommerce\BehatMagentoOneContext\CartContext
                 - EdmondsCommerce\BehatMagentoOneContext\CustomerContext
                 - EdmondsCommerce\BehatMagentoOneContext\NavigationContext
-                - EdmondsCommerce\BehatMagentoOneContext\ProductContext:
+                - EdmondsCommerce\BehatMagentoOneContext\ProductContext
+            parameters:
+                magentoSettings:                         
+                    pathToMage: '/path/to/app/Mage.php'
                     categoryUri: women/new-arrivals.html
                     simpleUri: accessories/eyewear/aviator-sunglasses.html
                     bundleUri: pillow-and-throw-set.html
                     configurableUri: lafayette-convertible-dress.html
                     groupedUri: vase-set.html
+
 ```
 
 The ProductContext has additional paramaters that allow for easier navigation to different types of product,
