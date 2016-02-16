@@ -6,6 +6,7 @@ use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\MinkExtension\Context\MinkContext;
 use Behat\MinkExtension\Context\RawMinkContext;
 use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
+use EdmondsCommerce\BehatFakerContext\FakerContext;
 use EdmondsCommerce\BehatHtmlContext\HTMLContext;
 use EdmondsCommerce\BehatHtmlContext\RedirectionContext;
 use EdmondsCommerce\BehatJavascriptContext\JavascriptEventsContext;
@@ -27,6 +28,7 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
         'EdmondsCommerce\BehatJavascriptContext\JavascriptEventsContext' => '_jsEvents',
         'EdmondsCommerce\BehatHtmlContext\HTMLContext'                   => '_html',
         'EdmondsCommerce\BehatMagentoOneContext\ProductContext'          => '_product',
+        'EdmondsCommerce\BehatMagentoOneContext\CustomerContext'         => '_customer',
     ];
     /** @var HTMLContext */
     protected $_html;
@@ -40,6 +42,9 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
     protected $_redirect;
     /** @var  ProductContext */
     protected $_product;
+    /** @var  CustomerContext */
+    protected $_customer;
+
 
     /** @BeforeSuite
      * @param BeforeSuiteScope $scope

@@ -35,5 +35,5 @@ default:
 
 ```
 
-The ProductContext has additional paramaters that allow for easier navigation to different types of product,
+The ProductContext has additional parameters that allow for easier navigation to different types of product,
 when these are not specified they will default to the sample data urls to ease prototyping of modules using the sample data.

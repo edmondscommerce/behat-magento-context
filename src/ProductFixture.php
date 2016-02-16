@@ -15,6 +15,8 @@ class ProductFixture extends AbstractMagentoContext
 {
 
     protected $_productId;
+    /** @var  \Mage_Catalog_Model_Product */
+    protected $_productModel;
 
     public function createProduct($productId, array $data)
     {
@@ -31,10 +33,44 @@ class ProductFixture extends AbstractMagentoContext
             $product->setData($key, $value);
         }
 
+        // Prevent options being saved multiple times
+        $product->getOptionInstance()->unsetOptions();
         $product->save();
+        $this->_productModel = $product;
         Mage::app()->cleanCache();
 
         return $product;
+    }
+
+    public function setAttribute($attributeCode, $value, $productId = null)
+    {
+        if(is_null($productId)) {
+            $productId = $this->_productId;
+        }
+        if(is_null($productId)) {
+            throw new \Exception('No Product ID found');
+        }
+
+        $product = Mage::getModel('catalog/product')->load($productId);
+        if(is_null($product->getSku())) {
+            throw new \Exception("No Product with an ID of $productId found");
+        }
+
+        $product->setData($attributeCode, $value);
+        $product->save();
+    }
+
+    public function getProductAttribute($attribute)
+    {
+        $product = $this->_productModel;
+        if(is_null($product->getId())) {
+            $product = Mage::getModel('catalog/product')->load($this->_productId);
+        }
+        if(is_null($product->getId())) {
+            throw new \Exception('No Product has been set');
+        }
+
+        return $product->getData($attribute);
     }
 
     protected function _getRequiredProductAttributes()

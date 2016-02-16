@@ -2,6 +2,7 @@
 
 use Behat\Mink\Element\NodeElement;
 use InvalidArgumentException;
+use Mage;
 
 class ProductContext extends ProductFixture
 {
@@ -11,6 +12,8 @@ class ProductContext extends ProductFixture
     const BUNDLE_URI = 'bundleUri';
     const CATEGORY_URI = 'categoryUri';
     const GROUPED_URI = 'groupedUri';
+
+    protected $_productId;
 
     /**
      * @param $productId
@@ -134,5 +137,59 @@ class ProductContext extends ProductFixture
         }
 
         throw new InvalidArgumentException(sprintf('Could not find a product option: "%s"', $option));
+    }
+
+    /**
+     * @Then /^There is a (?:|.+ )simple product with an SKU of (.*)$/i
+     */
+    public function iAmTestingASimpleProductWithAnSkuOfTest($sku)
+    {
+        $productId = $this->_productId;
+        if(is_null($productId)) {
+            $productId = 999999;
+        }                       else {
+            $productId++;
+        }
+        $this->_productId = $productId;
+        $this->createProduct($productId, ['sku' => $sku]);
+    }
+
+    /**
+     * @Given /^The product has a (.*) of (.*)$/i
+     */
+    public function theProductHasAnAttributeOf($property, $value)
+    {
+        if($property == 'price') {
+            $value = filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT);
+        }
+        $this->setAttribute($property, $value);
+    }
+
+    /**
+     * @Given The product is taxable
+     */
+    public function theProductIsTaxable()
+    {
+       $this->setAttribute('tax_class_id', 2);
+    }
+
+    /**
+     * @Given The product is not taxable
+     */
+    public function theProductIsNotTaxable()
+    {
+        $this->setAttribute('tax_class_id', 0);
+    }
+
+    /**
+     * @Given I have added :qty of the product to my cart
+     */
+    public function iHaveAddedOfTheProductToMyCart($qty)
+    {
+        $url = $this->getProductAttribute('url_path');
+        self::$_magentoSetting['simpleUri'] = $url;
+        $this->iAmOnASimpleProductPage();
+        $this->_mink->fillField('qty', $qty);
+        $this->iAddToCart();
     }
 }

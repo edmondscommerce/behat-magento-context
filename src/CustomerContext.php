@@ -1,11 +1,26 @@
 <?php namespace EdmondsCommerce\BehatMagentoOneContext;
 
 use Exception;
+use Mage;
 
-class CustomerContext extends AbstractMagentoContext
+class CustomerContext extends CustomerFixture
 {
-    const TEST_USER = 'test@example.com';
-    const TEST_PASSWORD = 'password';
+
+    /**
+     * @param $email
+     * @param $password
+     *
+     * @Given /^There is a customer with an email of ([^ ]*) and password of ([^ ]*)$/
+     */
+    public function thereIsACustomer($email, $password)
+    {
+        $this->createCustomer($email, $password);
+        $customer      = $this->_customer;
+        $customerQuote = Mage::getModel('sales/quote')
+                             ->setStoreId($customer->getData('store_id'))
+                             ->loadByCustomer($customer->getId());
+        $customerQuote->delete();
+    }
 
     /**
      * This is used to test the login method
@@ -20,7 +35,6 @@ class CustomerContext extends AbstractMagentoContext
     public function iLogIn($email, $password)
     {
         $this->_jsEvents->iWaitForDocumentReady();
-        $this->_navigation->iClickOnTheElement('.skip-account');
         $this->_mink->clickLink('Log In');
         $this->_jsEvents->iWaitForDocumentReady();
         $this->_mink->fillField('login[username]', $email);
@@ -37,8 +51,11 @@ class CustomerContext extends AbstractMagentoContext
      */
     public function iAmLoggedIn()
     {
+        if (is_null($this->_customerEmail) || is_null($this->_customerPassword)) {
+            throw new \Exception('You must create the customer before using this step');
+        }
         $this->visitPath('/');
-        $this->iLogIn(self::TEST_USER, self::TEST_PASSWORD);
+        $this->iLogIn($this->_customerEmail, $this->_customerPassword);
         $text = $this->getSession()->getPage()->getText();
         if (false !== strpos($text, 'Hello, Behat Customer!')) {
             return;
