@@ -10,6 +10,7 @@ use EdmondsCommerce\BehatFakerContext\FakerContext;
 use EdmondsCommerce\BehatHtmlContext\HTMLContext;
 use EdmondsCommerce\BehatHtmlContext\RedirectionContext;
 use EdmondsCommerce\BehatJavascriptContext\JavascriptEventsContext;
+use EdmondsCommerce\BehatScreenshotContext\ScreenshotContext;
 
 abstract class AbstractMagentoContext extends RawMinkContext implements Context, SnippetAcceptingContext
 {
@@ -20,6 +21,7 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
     protected $_cart;
     /** @var  CheckoutContext */
     protected $_checkout;
+    /** @var array  */
     protected $_contextsToInclude = [
         'FeatureContext'                                                 => '_mink',
         'EdmondsCommerce\BehatMagentoOneContext\CartContext'             => '_cart',
@@ -29,6 +31,7 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
         'EdmondsCommerce\BehatHtmlContext\HTMLContext'                   => '_html',
         'EdmondsCommerce\BehatMagentoOneContext\ProductContext'          => '_product',
         'EdmondsCommerce\BehatMagentoOneContext\CustomerContext'         => '_customer',
+        'EdmondsCommerce\BehatScreenshotContext\ScreenshotContext'       => '_screenshot'
     ];
     /** @var HTMLContext */
     protected $_html;
@@ -44,6 +47,8 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
     protected $_product;
     /** @var  CustomerContext */
     protected $_customer;
+    /** @var  ScreenshotContext */
+    protected $_screenshot;
 
 
     /** @BeforeSuite
@@ -54,16 +59,19 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
     public static function loadMagentoConfiguration(BeforeSuiteScope $scope)
     {
         $environment = $scope->getEnvironment();
-        if (!$environment->getSuite()->hasSetting('parameters')) {
+        if (!$environment->getSuite()->hasSetting('parameters'))
+        {
             throw new \Exception('You must set the parameters scetion of the behat.yml');
         }
         $parameters = $environment->getSuite()->getSetting('parameters');
-        if (!isset($parameters['magentoSettings'])) {
+        if (!isset($parameters['magentoSettings']))
+        {
             throw new \Exception('You must include the magentoSetting in the behat.yml file');
         }
         $magentoSetting = $parameters['magentoSettings'];
-        $pathToMage     = $magentoSetting['pathToMage'];
-        if (!file_exists($pathToMage)) {
+        $pathToMage = $magentoSetting['pathToMage'];
+        if (!file_exists($pathToMage))
+        {
             throw new \Exception('You must provide a valid pathToMage path in the behat.yml file');
         }
         self::$_magentoSetting = $magentoSetting;
@@ -75,13 +83,15 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
      */
     protected static function _loadMageFile()
     {
-        if (!class_exists('\Mage')) {
+        if (!class_exists('\Mage'))
+        {
             $autoLoaders = spl_autoload_functions();
             // We need to get the Mage file so we can use the Magento feature
             // @codingStandardsIgnoreStart
             require_once self::$_magentoSetting['pathToMage'];
             // @codingStandardsIgnoreEnd
-            if (\Mage::registry('isSecureArea') !== true) {
+            if (\Mage::registry('isSecureArea') !== true)
+            {
                 \Mage::register('isSecureArea', true);
             }
             \Mage::app()->setCurrentStore(\Mage_Core_Model_App::ADMIN_STORE_ID);
@@ -95,9 +105,11 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
              * original ones back
              */
             $newAutoLoaders = spl_autoload_functions();
-            if (count($newAutoLoaders) <= count($autoLoaders)) {
-                foreach (array_reverse($autoLoaders) AS $loader) {
-                    $class  = $loader[0];
+            if (count($newAutoLoaders) <= count($autoLoaders))
+            {
+                foreach (array_reverse($autoLoaders) AS $loader)
+                {
+                    $class = $loader[0];
                     $method = $loader[1];
                     spl_autoload_register(array($class, $method), true, true);
                 }
@@ -115,8 +127,9 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
     public function gatherContexts(BeforeScenarioScope $scope)
     {
         $environment = $scope->getEnvironment();
-        $contexts    = $this->_getArrayOfContexts();
-        foreach ($contexts as $context => $classVar) {
+        $contexts = $this->_getArrayOfContexts();
+        foreach ($contexts as $context => $classVar)
+        {
             $this->$classVar = $environment->getContext($context);
         }
     }
@@ -129,15 +142,18 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
     protected function _getArrayOfContexts()
     {
         $contexts = $this->_contextsToInclude;
-        if (!is_array($contexts) || empty($contexts)) {
+        if (!is_array($contexts) || empty($contexts))
+        {
             return [];
         }
 
-        $excluded   = isset($this->_contextsToExclude) ? $this->_contextsToExclude : [];
+        $excluded = isset($this->_contextsToExclude) ? $this->_contextsToExclude : [];
         $excluded[] = get_class($this);
 
-        foreach ($excluded AS $contextToExclude) {
-            if (isset($contexts[$contextToExclude])) {
+        foreach ($excluded AS $contextToExclude)
+        {
+            if (isset($contexts[$contextToExclude]))
+            {
                 unset($contexts[$contextToExclude]);
             }
         }

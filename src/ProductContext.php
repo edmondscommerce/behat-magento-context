@@ -16,6 +16,36 @@ class ProductContext extends ProductFixture
     protected $_productId;
 
     /**
+     * @var array Defaults paths for different areas of the catalog
+     */
+    protected $pathDefaults;
+
+    public function __construct()
+    {
+        $this->pathDefaults = array(
+            self::CONFIGURABLE_URI => '',
+            self::SIMPLE_URI => '',
+            self::BUNDLE_URI => '',
+            self::CATEGORY_URI => '',
+            self::GROUPED_URI => ''
+        );
+    }
+
+    /**
+     * Get the path for a type of catalog page, or returns the default if it isn't set in the config
+     * @param $pathName
+     * @return mixed
+     */
+    protected function getPath($pathName)
+    {
+        if (isset(self::$_magentoSetting[$pathName])) {
+            return self::$_magentoSetting[$pathName];
+        } else {
+            return $this->pathDefaults[$pathName];
+        }
+    }
+
+    /**
      * @param $productId
      * @Then /^I add a product with a productId "([^"]*)" to the cart$/
      */
