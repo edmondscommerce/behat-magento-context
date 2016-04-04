@@ -77,11 +77,12 @@ class TaxFixture extends AbstractMagentoContext
         $ruleModel = Mage::getModel('tax/calculation_rule')->getCollection()->addFieldToFilter('code', $code)->load()
                          ->getFirstItem();
         $ruleModelId = $ruleModel->getId();
+        $freePort = Mage::getModel('tax/calculation_rate')->loadByCode('Freeport');
         $ruleModel->setData(array(
                     "code"               => $code,
                     "tax_customer_class" => array($customerTaxClass->getId()),
                     "tax_product_class"  => array($productTaxClass->getId()),
-                    "tax_rate"           => array($taxCalculationRate->getId()),
+                    "tax_rate"           => array($taxCalculationRate->getId(), $freePort->getId()),
                     "priority"           => "0",
                     "position"           => "0",
                 ));

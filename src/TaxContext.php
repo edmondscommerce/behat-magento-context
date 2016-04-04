@@ -27,7 +27,7 @@ class TaxContext extends TaxFixture
             throw new \Exception('You must provide a numeric tax rate');
         }
         $customerClass = $this->getCustomerTaxClass();
-        $productClass  = $this->getProductTaxClass();
+        $productClass  = $this->getProductTaxClass('Behat Tax Rate');
         $rateClass     = $this->createCalculationRate($list[$country], $rate);
         $this->createTaxRule($customerClass, $productClass, $rateClass);
     }
