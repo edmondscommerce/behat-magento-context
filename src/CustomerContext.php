@@ -1,5 +1,7 @@
 <?php namespace EdmondsCommerce\BehatMagentoOneContext;
 
+use Behat\Behat\Tester\Exception\PendingException;
+use Behat\Gherkin\Node\TableNode;
 use Exception;
 use Mage;
 
@@ -23,6 +25,38 @@ class CustomerContext extends CustomerFixture
     }
 
     /**
+     * @Then I should be logged in
+     */
+    public function iShouldBeLoggedIn()
+    {
+        if (!Mage::getSingleton('customer/session')->isLoggedIn())
+        {
+            throw new Exception('I am not logged in when I should be');
+        }
+    }
+
+    /**
+     * @Given /^There is a user with the following details$/
+     */
+    public function thereIsAUserWithTheFollowingDetails(TableNode $table)
+    {
+        $rows = $table->getRows();
+        $this->createCustomer($rows[1][0], $rows[1][1]);
+    }
+
+    /**
+     * @When I click on the My Account link
+     */
+    public function iClickOnTheAccountLink()
+    {
+        $el = $this->getSession()->getPage()->find('text', 'My Account');
+
+        $el->click();
+    }
+
+    /**
+     * @Then I log in with email address :username and password :password
+     *
      * This is used to test the login method
      *
      * @param $email    - The email to log in with
@@ -30,7 +64,6 @@ class CustomerContext extends CustomerFixture
      *
      * @throws Exception
      *
-     * @Then I log in with email address :username and password :password
      */
     public function iLogIn($email, $password)
     {
@@ -62,5 +95,14 @@ class CustomerContext extends CustomerFixture
         }
 
         throw new Exception('unable to login');
+    }
+
+    /**
+     * @When /^I fill in the Log In form:$/
+     */
+    public function iFillInTheLogInForm(TableNode $table)
+    {
+        $rows = $table->getRows();
+        throw new PendingException();
     }
 }
