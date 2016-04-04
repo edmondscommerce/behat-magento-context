@@ -14,7 +14,7 @@ use Mage_Catalog_Model_Product_Visibility;
 class ProductFixture extends AbstractMagentoContext
 {
     /** @var  int The ID of the product under test */
-    private $_productId;
+    private $productId;
 
     /** @var Mage_Catalog_Model_Product The product under test */
     private $product;
@@ -27,7 +27,7 @@ class ProductFixture extends AbstractMagentoContext
      */
     public function createProduct($productId, array $data)
     {
-        $this->_productId = $productId;
+        $this->productId = $productId;
         $product = Mage::getModel('catalog/product')->load($productId);
 
         if (is_null($product->getId()))
@@ -61,20 +61,25 @@ class ProductFixture extends AbstractMagentoContext
      */
     public function getTheProduct()
     {
-        if (is_null($this->_productId))
+        if (is_null($this->productId))
         {
             throw new Exception('The product under test has not been set');
         }
 
-        if ($this->_product)
+        if ($this->product)
         {
-            return $this->_product;
+            return $this->product;
         }
 
         /** @var Mage_Catalog_Model_Product|null $product */
-        $this->_product = $this->loadProduct($this->_productId);
+        $this->loadProduct($this->productId);
 
-        return $this->_product;
+        if(!$this->product || !$this->product->getId())
+        {
+            throw new Exception("The product under test does not exist");
+        }
+
+        return $this->product;
     }
 
     /**
@@ -109,13 +114,15 @@ class ProductFixture extends AbstractMagentoContext
 
         if (is_null($product->getSku()))
         {
-            throw new Exception('No Product with an ID of '.$this->_productId.' found');
+            throw new Exception('No Product with an ID of '.$this->productId.' found');
         }
 
         if (!$product)
         {
             throw new Exception('The product under test does not exist');
         }
+
+        $this->product = $product;
     }
 
     public function getProductAttribute($attributeCode)

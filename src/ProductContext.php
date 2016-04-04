@@ -1,6 +1,7 @@
 <?php namespace EdmondsCommerce\BehatMagentoOneContext;
 
 use Behat\Behat\Tester\Exception\PendingException;
+use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Element\NodeElement;
 use Exception;
 use InvalidArgumentException;
@@ -15,7 +16,7 @@ class ProductContext extends ProductFixture
     const CATEGORY_URI = 'categoryUri';
     const GROUPED_URI = 'groupedUri';
 
-    protected $_productId;
+    protected $productId;
 
     /**
      * @var array Defaults paths for different areas of the catalog
@@ -31,6 +32,22 @@ class ProductContext extends ProductFixture
             self::CATEGORY_URI     => '',
             self::GROUPED_URI      => ''
         );
+    }
+
+    /**
+     * @Given /^I am on the product page$/
+     */
+    public function iAmOnTheProductPage()
+    {
+        $this->getSession()->visit($this->getFrontUrl('catalog/product/view', 'id='.$this->getTheProduct()->getId()));
+    }
+
+    /**
+     * @Given /^I add (\d+) of the product to the cart$/
+     */
+    public function iAddOfTheProductToTheCart($arg1)
+    {
+        
     }
 
     /**
@@ -176,7 +193,7 @@ class ProductContext extends ProductFixture
     /**
      * Choose an option for a configurable product
      *
-     * @Then /^I choose product option "([^"]*)"$/
+     * @Then /^I choose product option "[a-zA-Z\$]([^"]*)"$/
      */
     public function iChooseProductOptionFor($option)
     {
@@ -206,7 +223,7 @@ class ProductContext extends ProductFixture
      */
     public function iAmTestingASimpleProductWithAnSkuOfTest($sku)
     {
-        $productId = $this->_productId;
+        $productId = $this->productId;
         if (is_null($productId))
         {
             $productId = 999999;
@@ -215,7 +232,7 @@ class ProductContext extends ProductFixture
         {
             $productId++;
         }
-        $this->_productId = $productId;
+        $this->productId = $productId;
         $this->createProduct($productId, ['sku' => $sku]);
     }
 
@@ -277,7 +294,7 @@ class ProductContext extends ProductFixture
     public function thePriceOfTheSimpleProductIs($arg1)
     {
         $product = $this->getTheProduct();
-
+        
         $product->setPrice($arg1);
         $product->save();
     }

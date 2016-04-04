@@ -3,6 +3,7 @@
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Behat\Tester\Exception\PendingException;
+use Behat\Gherkin\Node\TableNode;
 use Exception;
 use Mage;
 
@@ -16,7 +17,7 @@ class CartContext extends AbstractMagentoContext implements Context, SnippetAcce
      */
     public function iOpenTheMiniCart()
     {
-        $this->_navigation->iClickOnTheElement('.skip-cart');
+        $this->_html->iClickOnTheElement('.skip-cart');
     }
 
     
@@ -50,10 +51,20 @@ class CartContext extends AbstractMagentoContext implements Context, SnippetAcce
     {
         $field = $this->getProductQuantityFromCartPage();
 
-        if ($field->getValue() == $arg1)
+        if (intval($field->getValue()) != intval($arg1))
         {
             throw new Exception('Expected a product quantity of ' . $arg1 . ' but found ' . $field->getValue());
         }
+    }
+
+    /**
+     * @Given /^I click on the Remove Product link$/
+     */
+    public function iClickOnTheRemoveProductLink()
+    {
+        $el = $this->getSession()->getPage()->find('css', '.product-cart-remove a.btn-remove');
+
+        $el->click();
     }
 
     /**
@@ -61,7 +72,12 @@ class CartContext extends AbstractMagentoContext implements Context, SnippetAcce
      */
     public function iSetTheQuantityTo($arg1)
     {
-        $this->getSession()->getPage()->find('css', '#qty')->setValue($arg1);
+        $el = $this->getSession()->getPage()->find('css', '#qty');
+        if(!$el)
+        {
+            throw new Exception('Could not find the quantity field on the product page');
+        }
+        $el->setValue($arg1);
     }
 
     /**
@@ -70,6 +86,22 @@ class CartContext extends AbstractMagentoContext implements Context, SnippetAcce
     protected function getProductQuantityFromCartPage()
     {
         return $this->getSession()->getPage()->find('css', '#shopping-cart-table .input-text.qty');
+    }
+
+    /**
+     * @When /^I click on the Empty Cart link$/
+     */
+    public function iClickOnTheEmptyCartLink1()
+    {
+        //$el = $this->getSession()->getPage()-
+    }
+
+    /**
+     * @Then /^The price in the cart should be (\D+[0-9\.\,]+)$/
+     */
+    public function thePriceInTheCartShouldBe($arg1)
+    {
+        throw new PendingException();
     }
 
     protected function showMiniCartContents()
@@ -116,7 +148,7 @@ class CartContext extends AbstractMagentoContext implements Context, SnippetAcce
      */
     public function iAmOnTheCartPage()
     {
-        $this->getSession()->visit(Mage::getUrl('checkout/cart/index'));
+        $this->getSession()->visit($this->getFrontUrl('checkout/cart/index'));
     }
 
     /**

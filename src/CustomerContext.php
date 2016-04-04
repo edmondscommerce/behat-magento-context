@@ -105,4 +105,12 @@ class CustomerContext extends CustomerFixture
         $rows = $table->getRows();
         throw new PendingException();
     }
+
+    /**
+     * @Given /^I am on the account page$/
+     */
+    public function iAmOnTheAccountPage()
+    {
+        $this->getSession()->visit(Mage::getUrl('customer/account/index'));
+    }
 }

@@ -91,16 +91,16 @@ class CheckoutContext extends AbstractMagentoContext
     }
 
     /**
-     * TODO: Cross check between onepagecheckout and one stepcheckout
+     * TODO: Cross check between onepagecheckout and onestepcheckout
      * @Then The quantity in the cart should be :arg1
      */
     public function theQuantityInTheCartShouldBe($arg1)
     {
-        $fieldValue =$this->getSession()->getPage()->find('css', '.onestepcheckout-summary td.qty input.qtyinput')->getValue();
+        $fieldValue = $this->getSession()->getPage()->find('css', '.onestepcheckout-summary td.qty input.qtyinput')->getValue();
 
-        if($arg1 != $fieldValue)
+        if ($arg1 != $fieldValue)
         {
-            throw new Exception('The expected quantity was '.$arg1.' but found '. $fieldValue);
+            throw new Exception('The expected quantity was ' . $arg1 . ' but found ' . $fieldValue);
         }
     }
 
