@@ -1,6 +1,8 @@
 <?php namespace EdmondsCommerce\BehatMagentoOneContext;
 
+use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Mink\Element\NodeElement;
+use Exception;
 use InvalidArgumentException;
 use Mage;
 
@@ -24,10 +26,10 @@ class ProductContext extends ProductFixture
     {
         $this->pathDefaults = array(
             self::CONFIGURABLE_URI => '',
-            self::SIMPLE_URI => '',
-            self::BUNDLE_URI => '',
-            self::CATEGORY_URI => '',
-            self::GROUPED_URI => ''
+            self::SIMPLE_URI       => '',
+            self::BUNDLE_URI       => '',
+            self::CATEGORY_URI     => '',
+            self::GROUPED_URI      => ''
         );
     }
 
@@ -38,9 +40,12 @@ class ProductContext extends ProductFixture
      */
     protected function getPath($pathName)
     {
-        if (isset(self::$_magentoSetting[$pathName])) {
+        if (isset(self::$_magentoSetting[$pathName]))
+        {
             return self::$_magentoSetting[$pathName];
-        } else {
+        }
+        else
+        {
             return $this->pathDefaults[$pathName];
         }
     }
@@ -70,6 +75,7 @@ class ProductContext extends ProductFixture
     /**
      * Add the product on the product page to cart, just clicks the add to cart element
      * @Then /^I add to cart$/
+     * @When I click the Add To Cart button
      */
     public function iAddToCart()
     {
@@ -78,13 +84,26 @@ class ProductContext extends ProductFixture
     }
 
     /**
+     * @Given /^I add a different product to the cart$/
+     */
+    public function iAddADifferentProductToTheCart()
+    {
+        //Get a random product that is not in the cart
+        $this->iAmOnASimpleProductPage();
+        $this->iAddToCart();
+    }
+
+    /**
      * @Given I am on a bundle product page
      */
     public function iAmOnABundleProductPage()
     {
-        if (isset(self::$_magentoSetting[self::BUNDLE_URI])) {
+        if (isset(self::$_magentoSetting[self::BUNDLE_URI]))
+        {
             $bundleURI = self::$_magentoSetting[self::BUNDLE_URI];
-        } else {
+        }
+        else
+        {
             $bundleURI = 'pillow-and-throw-set.html';
         }
         $this->visitPath('/' . $bundleURI);
@@ -95,9 +114,12 @@ class ProductContext extends ProductFixture
      */
     public function iAmOnACategoryPage()
     {
-        if (isset(self::$_magentoSetting[self::CATEGORY_URI])) {
+        if (isset(self::$_magentoSetting[self::CATEGORY_URI]))
+        {
             $categoryURI = self::$_magentoSetting[self::CATEGORY_URI];
-        } else {
+        }
+        else
+        {
             $categoryURI = 'women/new-arrivals.html';
         }
         $this->visitPath('/' . $categoryURI);
@@ -108,9 +130,12 @@ class ProductContext extends ProductFixture
      */
     public function iAmOnAConfigurableProductPage()
     {
-        if (isset(self::$_magentoSetting[self::CONFIGURABLE_URI])) {
+        if (isset(self::$_magentoSetting[self::CONFIGURABLE_URI]))
+        {
             $configurableURI = self::$_magentoSetting[self::CONFIGURABLE_URI];
-        } else {
+        }
+        else
+        {
             $configurableURI = 'lafayette-convertible-dress.html';
         }
         $this->visitPath('/' . $configurableURI);
@@ -121,9 +146,12 @@ class ProductContext extends ProductFixture
      */
     public function iAmOnAGroupedProductPage()
     {
-        if (isset(self::$_magentoSetting[self::GROUPED_URI])) {
+        if (isset(self::$_magentoSetting[self::GROUPED_URI]))
+        {
             $groupedURI = self::$_magentoSetting[self::GROUPED_URI];
-        } else {
+        }
+        else
+        {
             $groupedURI = 'vase-set.html';
         }
         $this->visitPath('/' . $groupedURI);
@@ -134,10 +162,12 @@ class ProductContext extends ProductFixture
      */
     public function iAmOnASimpleProductPage()
     {
-
-        if (isset(self::$_magentoSetting[self::SIMPLE_URI])) {
+        if (isset(self::$_magentoSetting[self::SIMPLE_URI]))
+        {
             $simpleURI = self::$_magentoSetting[self::SIMPLE_URI];
-        } else {
+        }
+        else
+        {
             $simpleURI = 'accessories/eyewear/aviator-sunglasses.html';
         }
         $this->visitPath('/' . $simpleURI);
@@ -151,14 +181,16 @@ class ProductContext extends ProductFixture
     public function iChooseProductOptionFor($option)
     {
         //Get the container
-        $session         = $this->getSession();
+        $session = $this->getSession();
         $optionContainer = $session->getPage()->findById('product-options-wrapper');
 
         /** @var NodeElement[] $values */
         $values = $optionContainer->findAll('xpath', 'dl/dd/div/ul/li/a');
 
-        foreach ($values as $v) {
-            if ($v->getAttribute('name') == $option) {
+        foreach ($values as $v)
+        {
+            if ($v->getAttribute('name') == $option)
+            {
                 //Chose the option
                 $v->click();
 
@@ -175,9 +207,12 @@ class ProductContext extends ProductFixture
     public function iAmTestingASimpleProductWithAnSkuOfTest($sku)
     {
         $productId = $this->_productId;
-        if(is_null($productId)) {
+        if (is_null($productId))
+        {
             $productId = 999999;
-        }                       else {
+        }
+        else
+        {
             $productId++;
         }
         $this->_productId = $productId;
@@ -189,7 +224,8 @@ class ProductContext extends ProductFixture
      */
     public function theProductHasAnAttributeOf($property, $value)
     {
-        if($property == 'price') {
+        if ($property == 'price')
+        {
             $value = filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT);
         }
         $this->setAttribute($property, $value);
@@ -221,5 +257,100 @@ class ProductContext extends ProductFixture
         $this->iAmOnASimpleProductPage();
         $this->_mink->fillField('qty', $qty);
         $this->iAddToCart();
+    }
+
+
+    /**
+     * @Given The product is in the category
+     */
+    public function theProductIsInTheCategory()
+    {
+        $product = $this->getTheProduct();
+        $product->setCategoryIds($this->_category->getCategoryId());
+
+        $product->save();
+    }
+
+    /**
+     * @Given /^The price of the product is [\D]+([0-9,.]+)/
+     */
+    public function thePriceOfTheSimpleProductIs($arg1)
+    {
+        $product = $this->getTheProduct();
+
+        $product->setPrice($arg1);
+        $product->save();
+    }
+
+
+    /**
+     * @When /^I update the quantity of the product in the cart to (.+)$/
+     */
+    public function iUpdateTheQuantityOfTheProductInTheCartTo($arg1)
+    {
+        $this->getSession()->getPage()->find('css', '#shopping-cart-table .input-text.qty')->setValue($arg1);
+    }
+
+
+    /**
+     * @Given /^The product is in stock$/
+     * Set the stock of the product to in stock
+     */
+    public function theProductIsInStock()
+    {
+        $stockItem = Mage::getModel('cataloginventory/stock_item')->loadByProduct($this->getTheProduct()->getId());
+        $stockItem->setIsInStock(1);
+        $stockItem->setQty(100);
+        $stockItem->save();
+    }
+
+
+    /**
+     * Check the product price
+     * @Then /^The price of the product should be [\D]+([0-9,.]+)/
+     */
+    public function thePriceOfTheProductShouldBe($arg1)
+    {
+        $price = $this->getSession()->getPage()->find('css', '.price-box .price');
+        $val = preg_grep('/[\D]+([0-9,.]+)/', $price->getValue())[0];
+
+        //Remove currency and non numeric characters
+        if ($val != $arg1)
+        {
+            throw new Exception('Price ' . $val . ' does not match ' . $arg1);
+        }
+    }
+
+    /**
+     * @When I add the product to the cart
+     */
+    public function iAddTheProductToTheCart()
+    {
+        $this->_cart->iClickTheAddToCartButton('.add-to-cart button');
+    }
+
+
+    /**
+     * @Given /^The simple product has a stock of (\d+)$/
+     */
+    public function theSimpleProductHasAStockOf($arg1)
+    {
+        $stockItem = Mage::getModel('cataloginventory/stock_item')->loadByProduct($this->getTheProduct()->getId());
+
+        $stockItem->setIsInStock(1);
+        $stockItem->setQty($arg1);
+        $stockItem->save();
+    }
+
+    /**
+     * @Given /^The product is out of stock$/
+     */
+    public function theProductIsOutOfStock()
+    {
+        $stockItem = Mage::getModel('cataloginventory/stock_item')->loadByProduct($this->getTheProduct()->getId());
+
+        $stockItem->setIsInStock(0);
+        $stockItem->setQty(0);
+        $stockItem->save();
     }
 }

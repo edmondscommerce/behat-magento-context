@@ -21,17 +21,18 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
     protected $_cart;
     /** @var  CheckoutContext */
     protected $_checkout;
-    /** @var array  */
+    /** @var array */
     protected $_contextsToInclude = [
-        'FeatureContext'                                                 => '_mink',
-        'EdmondsCommerce\BehatMagentoOneContext\CartContext'             => '_cart',
-        'EdmondsCommerce\BehatMagentoOneContext\CheckoutContext'         => '_checkout',
-        'EdmondsCommerce\BehatHtmlContext\RedirectionContext'            => '_redirect',
-        'EdmondsCommerce\BehatJavascriptContext\JavascriptEventsContext' => '_jsEvents',
-        'EdmondsCommerce\BehatHtmlContext\HTMLContext'                   => '_html',
-        'EdmondsCommerce\BehatMagentoOneContext\ProductContext'          => '_product',
-        'EdmondsCommerce\BehatMagentoOneContext\CustomerContext'         => '_customer',
-        'EdmondsCommerce\BehatScreenshotContext\ScreenshotContext'       => '_screenshot'
+        'FeatureContext'               => '_mink',
+        CartContext::class             => '_cart',
+        CheckoutContext::class         => '_checkout',
+        RedirectionContext::class      => '_redirect',
+        JavascriptEventsContext::class => '_jsEvents',
+        HTMLContext::class             => '_html',
+        ProductContext::class          => '_product',
+        CustomerContext::class         => '_customer',
+        ScreenshotContext::class       => '_screenshot',
+        CategoryContext::class         => '_category'
     ];
     /** @var HTMLContext */
     protected $_html;
@@ -49,7 +50,8 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
     protected $_customer;
     /** @var  ScreenshotContext */
     protected $_screenshot;
-
+    /** @var CategoryContext */
+    protected $_category;
 
     /** @BeforeSuite
      * @param BeforeSuiteScope $scope
