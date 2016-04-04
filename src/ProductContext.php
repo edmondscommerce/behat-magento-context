@@ -200,7 +200,7 @@ class ProductContext extends ProductFixture
      */
     public function theProductIsTaxable()
     {
-       $this->setAttribute('tax_class_id', 2);
+       $this->setAttribute('tax_class_id', $this->_getBehatTaxClass());
     }
 
     /**

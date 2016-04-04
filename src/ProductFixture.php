@@ -44,15 +44,15 @@ class ProductFixture extends AbstractMagentoContext
 
     public function setAttribute($attributeCode, $value, $productId = null)
     {
-        if(is_null($productId)) {
+        if (is_null($productId)) {
             $productId = $this->_productId;
         }
-        if(is_null($productId)) {
+        if (is_null($productId)) {
             throw new \Exception('No Product ID found');
         }
 
         $product = Mage::getModel('catalog/product')->load($productId);
-        if(is_null($product->getSku())) {
+        if (is_null($product->getSku())) {
             throw new \Exception("No Product with an ID of $productId found");
         }
 
@@ -63,10 +63,10 @@ class ProductFixture extends AbstractMagentoContext
     public function getProductAttribute($attribute)
     {
         $product = $this->_productModel;
-        if(is_null($product->getId())) {
+        if (is_null($product->getId())) {
             $product = Mage::getModel('catalog/product')->load($this->_productId);
         }
-        if(is_null($product->getId())) {
+        if (is_null($product->getId())) {
             throw new \Exception('No Product has been set');
         }
 
@@ -84,7 +84,7 @@ class ProductFixture extends AbstractMagentoContext
             'name'              => 'Behat Product',
             'weight'            => 4.0000,
             'status'            => 1,
-            'tax_class_id'      => 4,
+            'tax_class_id'      => $this->_getBehatTaxClass(),
             'visibility'        => Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH,
             'price'             => 11.22,
             'cost'              => 22.33,
@@ -99,5 +99,17 @@ class ProductFixture extends AbstractMagentoContext
                 'qty'                     => 999
             ],
         ];
+    }
+
+    protected function _getBehatTaxClass()
+    {
+        $taxClass = Mage::getModel('tax/class')->getCollection()->addFieldToFilter('class_name', 'Behat Tax Rate')
+                        ->addFieldToFilter('class_type', 'PRODUCT')->getFirstItem();
+        if(is_null($taxClass->getId())) {
+            $taxClass->setData('class_name', 'Behat Tax Rate')->setData('class_type', 'PRODUCT');
+            $taxClass->save();
+        }
+
+        return $taxClass->getId();
     }
 }
