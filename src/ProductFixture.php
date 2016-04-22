@@ -1,128 +1,76 @@
-<?php namespace EdmondsCommerce\BehatMagentoOneContext;
-
+<?php
 /**
  * @category EdmondsCommerce
  * @package  EdmondsCommerce_
  * @author   Ross Mitchell <ross@edmondscommerce.co.uk>
  */
 
-use Exception;
+namespace EdmondsCommerce\BehatMagentoOneContext;
+
+
 use Mage;
-use Mage_Catalog_Model_Product;
 use Mage_Catalog_Model_Product_Visibility;
 
 class ProductFixture extends AbstractMagentoContext
 {
-    /** @var  int The ID of the product under test */
-    private $_productId;
 
-    /** @var Mage_Catalog_Model_Product The product under test */
-    private $product;
+    protected $_productId;
+    /** @var  \Mage_Catalog_Model_Product */
+    protected $_productModel;
 
-    /**
-     * @param $productId
-     * @param array $data
-     * @return \EdmondsCommerce_FeaturedProducts_Model_Catalog_Product|Mage_Catalog_Model_Product
-     * @throws Exception
-     */
     public function createProduct($productId, array $data)
     {
         $this->_productId = $productId;
-        $product = Mage::getModel('catalog/product')->load($productId);
-
-        if (is_null($product->getId()))
-        {
+        $product          = Mage::getModel('catalog/product')->load($productId);
+        if (is_null($product->getId())) {
             $product->setId($productId);
         }
-
         $requiredAttribute = $this->_getRequiredProductAttributes();
-        foreach ($requiredAttribute as $key => $value)
-        {
+        foreach ($requiredAttribute as $key => $value) {
             $product->setData($key, $value);
         }
-        foreach ($data as $key => $value)
-        {
+        foreach ($data as $key => $value) {
             $product->setData($key, $value);
         }
 
         // Prevent options being saved multiple times
         $product->getOptionInstance()->unsetOptions();
         $product->save();
-        $this->product = $product;
+        $this->_productModel = $product;
         Mage::app()->cleanCache();
 
         return $product;
     }
 
-    /**
-     * Get the product under test defined in the feature
-     * @return Mage_Catalog_Model_Product
-     * @throws Exception
-     */
-    public function getTheProduct()
-    {
-        if (is_null($this->_productId))
-        {
-            throw new Exception('The product under test has not been set');
-        }
-
-        if ($this->_product)
-        {
-            return $this->_product;
-        }
-
-        /** @var Mage_Catalog_Model_Product|null $product */
-        $this->_product = $this->loadProduct($this->_productId);
-
-        return $this->_product;
-    }
-
-    /**
-     * @param $attributeCode
-     * @param $value
-     * @param null $productId
-     * @throws Exception
-     */
     public function setAttribute($attributeCode, $value, $productId = null)
     {
-        if(is_null($productId))
-        {
-            $product = $this->getTheProduct();
+        if (is_null($productId)) {
+            $productId = $this->_productId;
         }
-        else
-        {
-            $product = $this->loadProduct($productId);
+        if (is_null($productId)) {
+            throw new \Exception('No Product ID found');
+        }
+
+        $product = Mage::getModel('catalog/product')->load($productId);
+        if (is_null($product->getSku())) {
+            throw new \Exception("No Product with an ID of $productId found");
         }
 
         $product->setData($attributeCode, $value);
         $product->save();
     }
 
-    /**
-     * @param $id
-     * @return Mage_Catalog_Model_Product
-     * @throws Exception
-     */
-    protected function loadProduct($id)
+    public function getProductAttribute($attribute)
     {
-        $product = Mage::getModel('catalog/product')->load($id);
-
-        if (is_null($product->getSku()))
-        {
-            throw new Exception('No Product with an ID of '.$this->_productId.' found');
+        $product = $this->_productModel;
+        if (is_null($product->getId())) {
+            $product = Mage::getModel('catalog/product')->load($this->_productId);
+        }
+        if (is_null($product->getId())) {
+            throw new \Exception('No Product has been set');
         }
 
-        if (!$product)
-        {
-            throw new Exception('The product under test does not exist');
-        }
-    }
-
-    public function getProductAttribute($attributeCode)
-    {
-        $product = $this->getTheProduct();
-
-        return $product->getData($attributeCode);
+        return $product->getData($attribute);
     }
 
     protected function _getRequiredProductAttributes()
