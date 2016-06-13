@@ -91,6 +91,7 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
 
 
     /**
+     * @Given /^I am limiting the category to (\d+) products$/
      * @When /^I select to show (\d+) products$/
      */
     public function iSelectToShowProducts($arg1)
@@ -99,7 +100,7 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
 
         $limiter->setValue($arg1);
     }
-
+    
     /**
      * @Given I am testing a category with an ID of :arg1
      */

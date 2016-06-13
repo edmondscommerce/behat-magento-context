@@ -40,12 +40,13 @@ class AdminFixture extends AbstractMagentoContext
         $this->_password = $password;
     }
 
-    public function getAdminUrl($path = null)
+    public function getAdminUrl($path = null, $params = array())
     {
         if(is_null($path)) {
             $path = 'adminhtml/index/index/';
         }
+        $params = array_merge($params, ['_type' => Mage_Core_Model_Store::URL_TYPE_WEB]);
         return Mage::helper('adminhtml')
-                   ->getUrl($path, ['_type' => Mage_Core_Model_Store::URL_TYPE_WEB]);
+                   ->getUrl($path, $params);
     }
 }

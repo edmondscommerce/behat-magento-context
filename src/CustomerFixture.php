@@ -36,6 +36,22 @@ class CustomerFixture extends AbstractMagentoContext
         }
         $customer->setPassword($password);
         $customer->save();
+        if(count($customer->getAddresses()) < 1 ) {
+            $address = Mage::getModel("customer/address");
+            $address->setCustomerId($customer->getId())
+                    ->setFirstname('Behat')
+                    ->setLastname('Customer')
+                    ->setCountryId('SG')
+                    ->setPostcode('123456')
+                    ->setCity('Singapore')
+                    ->setTelephone('0123456789')
+                    ->setStreet('123 Main Street')
+                    ->setIsDefaultBilling('1')
+                    ->setIsDefaultShipping('1')
+                    ->setSaveInAddressBook('1');
+
+            $address->save();
+        }
         $this->_customerEmail    = $email;
         $this->_customerPassword = $password;
         $this->_customer         = $customer;

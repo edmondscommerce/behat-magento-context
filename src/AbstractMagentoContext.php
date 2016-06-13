@@ -11,6 +11,8 @@ use EdmondsCommerce\BehatHtmlContext\HTMLContext;
 use EdmondsCommerce\BehatHtmlContext\RedirectionContext;
 use EdmondsCommerce\BehatJavascriptContext\JavascriptEventsContext;
 use EdmondsCommerce\BehatScreenshotContext\ScreenshotContext;
+use Mage;
+use Mage_Core_Model_Store;
 
 abstract class AbstractMagentoContext extends RawMinkContext implements Context, SnippetAcceptingContext
 {
@@ -40,8 +42,6 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
     protected $_jsEvents;
     /** @var MinkContext */
     protected $_mink;
-    /** @var HTMLContext */
-    protected $_navigation;
     /** @var RedirectionContext */
     protected $_redirect;
     /** @var  ProductContext */
@@ -161,5 +161,13 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
         }
 
         return $contexts;
+    }
+
+    protected function getFrontUrl($route, $queryArgs = '')
+    {
+        return Mage::getUrl('checkout/cart/index', array(
+            '_store' => Mage::app()->getDefaultStoreView()->getId(),
+            '_type'  => Mage_Core_Model_Store::URL_TYPE_WEB
+        ));
     }
 }

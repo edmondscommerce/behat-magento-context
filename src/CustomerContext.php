@@ -25,6 +25,24 @@ class CustomerContext extends CustomerFixture
     }
 
     /**
+     * @param $attributeName
+     * @param $attributeValue
+     *
+     * @throws Exception
+     * 
+     * @Given /^The customer has an attribute ([^ ]*) with a value of (.*)$/
+     */
+    public function theCustomerHasAnAttributeOf($attributeName, $attributeValue)
+    {
+        if(is_null($this->_customer)) {
+            throw new Exception('The customer has not been set');
+        }
+        $customer = $this->_customer;
+        $customer->setData($attributeName, $attributeValue);
+        $customer->save();
+    }
+
+    /**
      * @Then I should be logged in
      */
     public function iShouldBeLoggedIn()
@@ -104,5 +122,13 @@ class CustomerContext extends CustomerFixture
     {
         $rows = $table->getRows();
         throw new PendingException();
+    }
+
+    /**
+     * @Given /^I am on the account page$/
+     */
+    public function iAmOnTheAccountPage()
+    {
+        $this->getSession()->visit(Mage::getUrl('customer/account/index'));
     }
 }

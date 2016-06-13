@@ -9,10 +9,18 @@ namespace EdmondsCommerce\BehatMagentoOneContext;
 
 
 use Behat\Gherkin\Node\TableNode;
+use Mage;
 
 class AdminContext extends AdminFixture
 {
     protected $_amLoggedIn = false;
+
+    /** @BeforeScenario */
+    public function before($event)
+    {
+        $this->_amLoggedIn = false;
+    }
+
 
     /**
      * @Given /^There is an admin user with a username of (.*) and password of (.*)$/
@@ -38,6 +46,7 @@ class AdminContext extends AdminFixture
         $this->_html->iClickOnTheElement('.form-button');
         $this->_jsEvents->iWaitForDocumentReady();
         $this->_mink->assertPageContainsText('Dashboard');
+        Mage::getConfig()->saveConfig('admin/security/use_form_key', 0);
         $this->_amLoggedIn = true;
     }
 
@@ -180,6 +189,24 @@ class AdminContext extends AdminFixture
         }
 
         return $orderTotals;
+    }
+
+
+    /**
+     * @Given I am on the customer edit page
+     */
+    public function iAmOnTheCustomerEditPage()
+    {
+        $customer   = $this->_customer->getCustomer();
+        $customerId = $customer->getId();
+        if ($this->_amLoggedIn === false) {
+            $this->iLogInToTheAdmin();
+        }
+        $customerUrl = $this->getAdminUrl('adminhtml/customer/edit', ['id' => $customerId]);
+        $this->visitPath($customerUrl);
+        $this->_jsEvents->iWaitForDocumentReady();
+        $this->_mink->assertPageContainsText('Behat Customer');
+        
     }
 
 }

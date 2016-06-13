@@ -1,6 +1,9 @@
 <?php namespace EdmondsCommerce\BehatMagentoOneContext;
 
+use Behat\Behat\Tester\Exception\PendingException;
+use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Element\NodeElement;
+use Exception;
 use InvalidArgumentException;
 use Mage;
 
@@ -13,7 +16,7 @@ class ProductContext extends ProductFixture
     const CATEGORY_URI = 'categoryUri';
     const GROUPED_URI = 'groupedUri';
 
-    protected $_productId;
+
 
     /**
      * @var array Defaults paths for different areas of the catalog
@@ -24,11 +27,29 @@ class ProductContext extends ProductFixture
     {
         $this->pathDefaults = array(
             self::CONFIGURABLE_URI => '',
-            self::SIMPLE_URI => '',
-            self::BUNDLE_URI => '',
-            self::CATEGORY_URI => '',
-            self::GROUPED_URI => ''
+            self::SIMPLE_URI       => '',
+            self::BUNDLE_URI       => '',
+            self::CATEGORY_URI     => '',
+            self::GROUPED_URI      => ''
         );
+    }
+
+    /**
+     * @Given /^I am on the product page$/
+     */
+    public function iAmOnTheProductPage()
+    {
+        $url = $this->getProductAttribute('url_path');
+        self::$_magentoSetting['simpleUri'] = $url;
+        $this->iAmOnASimpleProductPage();
+    }
+
+    /**
+     * @Given /^I add (\d+) of the product to the cart$/
+     */
+    public function iAddOfTheProductToTheCart($arg1)
+    {
+        
     }
 
     /**
@@ -70,11 +91,22 @@ class ProductContext extends ProductFixture
     /**
      * Add the product on the product page to cart, just clicks the add to cart element
      * @Then /^I add to cart$/
+     * @When I click the Add To Cart button
      */
     public function iAddToCart()
     {
         $this->_html->iClickOnTheFirstVisibleText('Add to Cart');
         $this->_jsEvents->iWaitForDocumentReady();
+    }
+
+    /**
+     * @Given /^I add a different product to the cart$/
+     */
+    public function iAddADifferentProductToTheCart()
+    {
+        //Get a random product that is not in the cart
+        $this->iAmOnASimpleProductPage();
+        $this->iAddToCart();
     }
 
     /**
@@ -146,7 +178,7 @@ class ProductContext extends ProductFixture
     /**
      * Choose an option for a configurable product
      *
-     * @Then /^I choose product option "([^"]*)"$/
+     * @Then /^I choose product option "[a-zA-Z\$]([^"]*)"$/
      */
     public function iChooseProductOptionFor($option)
     {
@@ -174,12 +206,14 @@ class ProductContext extends ProductFixture
      */
     public function iAmTestingASimpleProductWithAnSkuOfTest($sku)
     {
-        $productId = $this->_productId;
-        if(is_null($productId)) {
-            $productId = 999999;
-        }                       else {
-            $productId++;
+        $product = Mage::getModel('catalog/product')->loadByAttribute('sku', $sku);
+        if(is_object($product) && !is_null($product->getId())) {
+            $this->_productModel = $product;
+            $this->_productId = $product->getId();
+
+            return;
         }
+        $productId = $this->getEmptyProductId();
         $this->_productId = $productId;
         $this->createProduct($productId, ['sku' => $sku]);
     }
@@ -221,5 +255,103 @@ class ProductContext extends ProductFixture
         $this->iAmOnASimpleProductPage();
         $this->_mink->fillField('qty', $qty);
         $this->iAddToCart();
+    }
+
+
+    /**
+     * @Given The product is in the category
+     */
+    public function theProductIsInTheCategory()
+    {
+        $product = $this->getTheProduct();
+        $product->setCategoryIds($this->_category->getCategoryId());
+
+        $product->save();
+    }
+
+    /**
+     * @Given /^The price of the product is [\D]+([0-9,.]+)/
+     */
+    public function thePriceOfTheSimpleProductIs($arg1)
+    {
+        $product = $this->getTheProduct();
+        
+        $product->setPrice($arg1);
+        $product->save();
+    }
+
+
+    /**
+     * @When /^I update the quantity of the product in the cart to (.+)$/
+     */
+    public function iUpdateTheQuantityOfTheProductInTheCartTo($arg1)
+    {
+        $this->getSession()->getPage()->find('css', '#shopping-cart-table .input-text.qty')->setValue($arg1);
+    }
+
+
+    /**
+     * @Given /^The product is in stock$/
+     * Set the stock of the product to in stock
+     */
+    public function theProductIsInStock()
+    {
+        $stockItem = Mage::getModel('cataloginventory/stock_item')->loadByProduct($this->getTheProduct()->getId());
+        $stockItem->setIsInStock(1);
+        $stockItem->setQty(100);
+        $stockItem->save();
+    }
+
+
+    /**
+     * Check the product price
+     * @Then /^The price of the product should be [\D]+([0-9,.]+)/
+     */
+    public function thePriceOfTheProductShouldBe($arg1)
+    {
+        $price = $this->getSession()->getPage()->find('css', '.price-box .price');
+        if(is_null($price)) {
+            throw new \Exception('Could not find the price for the product');
+        }
+        $val = preg_replace('/[^0-9,.]/','', $price->getText());
+
+        //Remove currency and non numeric characters
+        if ($val != $arg1)
+        {
+            throw new Exception('Price ' . $val . ' does not match ' . $arg1);
+        }
+    }
+
+    /**
+     * @When I add the product to the cart
+     */
+    public function iAddTheProductToTheCart()
+    {
+        $this->_cart->iClickTheAddToCartButton('.add-to-cart button');
+    }
+
+
+    /**
+     * @Given /^The simple product has a stock of (\d+)$/
+     */
+    public function theSimpleProductHasAStockOf($arg1)
+    {
+        $stockItem = Mage::getModel('cataloginventory/stock_item')->loadByProduct($this->getTheProduct()->getId());
+
+        $stockItem->setIsInStock(1);
+        $stockItem->setQty($arg1);
+        $stockItem->save();
+    }
+
+    /**
+     * @Given /^The product is out of stock$/
+     */
+    public function theProductIsOutOfStock()
+    {
+        $stockItem = Mage::getModel('cataloginventory/stock_item')->loadByProduct($this->getTheProduct()->getId());
+
+        $stockItem->setIsInStock(0);
+        $stockItem->setQty(0);
+        $stockItem->save();
     }
 }

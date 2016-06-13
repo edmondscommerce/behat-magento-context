@@ -1,27 +1,37 @@
-<?php
+<?php namespace EdmondsCommerce\BehatMagentoOneContext;
+
 /**
  * @category EdmondsCommerce
  * @package  EdmondsCommerce_
  * @author   Ross Mitchell <ross@edmondscommerce.co.uk>
  */
 
-namespace EdmondsCommerce\BehatMagentoOneContext;
-
-
+use Exception;
 use Mage;
+use Mage_Catalog_Model_Product;
 use Mage_Catalog_Model_Product_Visibility;
 
 class ProductFixture extends AbstractMagentoContext
 {
-
+    /** @var  int The ID of the product under test */
     protected $_productId;
     /** @var  \Mage_Catalog_Model_Product */
     protected $_productModel;
+    protected $_storeId;
 
+    /**
+     * @param       $productId
+     * @param array $data
+     *
+     * @return \EdmondsCommerce_FeaturedProducts_Model_Catalog_Product|Mage_Catalog_Model_Product
+     * @throws Exception
+     */
     public function createProduct($productId, array $data)
     {
         $this->_productId = $productId;
         $product          = Mage::getModel('catalog/product')->load($productId);
+
+        #$product->unsetData();
         if (is_null($product->getId())) {
             $product->setId($productId);
         }
@@ -42,6 +52,53 @@ class ProductFixture extends AbstractMagentoContext
         return $product;
     }
 
+    public function getEmptyProductId($productId = null)
+    {
+        if(is_null($productId)) {
+            $productId = 999999;
+        }
+        $product = Mage::getModel('catalog/product')->load($productId);
+        if(is_null($product->getSku())) {
+            return $productId;
+        }
+        
+        $productId++;
+        return $this->getEmptyProductId($productId);
+    }
+
+    /**
+     * Get the product under test defined in the feature
+     *
+     * @return Mage_Catalog_Model_Product
+     * @throws Exception
+     */
+    public function getTheProduct()
+    {
+        if (is_null($this->_productId)) {
+            throw new Exception('The product under test has not been set');
+        }
+
+        if ($this->_productModel) {
+            return $this->_productModel;
+        } else {
+            throw new Exception("The product under test does not exist");
+        }
+
+
+    }
+
+    public function setStoreId($storeId)
+    {
+        $this->_storeId = $storeId;
+    }
+    
+    /**
+     * @param      $attributeCode
+     * @param      $value
+     * @param null $productId
+     *
+     * @throws Exception
+     */
     public function setAttribute($attributeCode, $value, $productId = null)
     {
         if (is_null($productId)) {
@@ -54,6 +111,10 @@ class ProductFixture extends AbstractMagentoContext
         $product = Mage::getModel('catalog/product')->load($productId);
         if (is_null($product->getSku())) {
             throw new \Exception("No Product with an ID of $productId found");
+        }
+        
+        if(!is_null($this->_storeId)) {
+            $product->setStoreId($this->_storeId);
         }
 
         $product->setData($attributeCode, $value);
@@ -76,7 +137,7 @@ class ProductFixture extends AbstractMagentoContext
     protected function _getRequiredProductAttributes()
     {
         return [
-            'website_ids'       => [1],
+            'website_ids'       => Mage::getResourceModel('core/website_collection')->getAllIds(),
             'attribute_set_id'  => Mage::getModel('catalog/product')->getDefaultAttributeSetId(),
             'type_id'           => 'simple',
             'created_at'        => strtotime('now'),
@@ -92,7 +153,7 @@ class ProductFixture extends AbstractMagentoContext
             'description'       => 'This is a product used for Behat Testing',
             'short_description' => 'This is a product used for Behat Testing',
             'stock_data'        => [
-                'use_config_manage_stock' => 0,
+                'use_config_manage_stock' => 1,
                 'manage_stock'            => 1,
                 'min_sale_qty'            => 1,
                 'is_in_stock'             => 1,
@@ -105,7 +166,7 @@ class ProductFixture extends AbstractMagentoContext
     {
         $taxClass = Mage::getModel('tax/class')->getCollection()->addFieldToFilter('class_name', 'Behat Tax Rate')
                         ->addFieldToFilter('class_type', 'PRODUCT')->getFirstItem();
-        if(is_null($taxClass->getId())) {
+        if (is_null($taxClass->getId())) {
             $taxClass->setData('class_name', 'Behat Tax Rate')->setData('class_type', 'PRODUCT');
             $taxClass->save();
         }
