@@ -17,11 +17,12 @@ class CustomerContext extends CustomerFixture
     public function thereIsACustomer($email, $password)
     {
         $this->createCustomer($email, $password);
-        $customer      = $this->_customer;
-        $customerQuote = Mage::getModel('sales/quote')
-                             ->setStoreId($customer->getData('store_id'))
-                             ->loadByCustomer($customer->getId());
-        $customerQuote->delete();
+        $customer       = $this->_customer;
+        $customerQuotes = Mage::getModel('sales/quote')->getCollection()
+                              ->addFieldToFilter('customer_id', $customer->getId());
+        foreach ($customerQuotes as $quote) {
+            $quote->delete();
+        }
     }
 
     /**
@@ -29,12 +30,12 @@ class CustomerContext extends CustomerFixture
      * @param $attributeValue
      *
      * @throws Exception
-     * 
+     *
      * @Given /^The customer has an attribute ([^ ]*) with a value of (.*)$/
      */
     public function theCustomerHasAnAttributeOf($attributeName, $attributeValue)
     {
-        if(is_null($this->_customer)) {
+        if (is_null($this->_customer)) {
             throw new Exception('The customer has not been set');
         }
         $customer = $this->_customer;
@@ -47,8 +48,7 @@ class CustomerContext extends CustomerFixture
      */
     public function iShouldBeLoggedIn()
     {
-        if (!Mage::getSingleton('customer/session')->isLoggedIn())
-        {
+        if (!Mage::getSingleton('customer/session')->isLoggedIn()) {
             throw new Exception('I am not logged in when I should be');
         }
     }
