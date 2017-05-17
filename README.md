@@ -1,4 +1,4 @@
-#Magento One Context
+# Magento One Context
 ## By [Edmonds Commerce](https://www.edmondscommerce.co.uk)
 
 Behat contexts to aid testing of Magento 1.x sites
