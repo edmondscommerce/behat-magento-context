@@ -67,7 +67,17 @@ class CustomerContext extends CustomerFixture
      */
     public function iClickOnTheAccountLink()
     {
-        $el = $this->getSession()->getPage()->find('text', 'My Account');
+        $el = $this->getSession()->getPage()->find('named', array('content', 'My Account'));
+
+        $el->click();
+    }
+
+    /**
+     * @When I click on the Log In link
+     */
+    public function iClickOnTheLogInLink()
+    {
+        $el = $this->getSession()->getPage()->find('named', array('content', 'Log In'));
 
         $el->click();
     }
