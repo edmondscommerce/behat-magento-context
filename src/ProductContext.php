@@ -206,7 +206,10 @@ class ProductContext extends ProductFixture
      */
     public function iAmTestingASimpleProductWithAnSkuOfTest($sku)
     {
+        $store = Mage::app()->getStore()->getStoreId();
+        Mage::app()->setCurrentStore(0);
         $product = Mage::getModel('catalog/product')->loadByAttribute('sku', $sku);
+        Mage::app()->setCurrentStore($store);
         if(is_object($product) && !is_null($product->getId())) {
             $this->_productModel = $product;
             $this->_productId = $product->getId();

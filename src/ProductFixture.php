@@ -108,7 +108,11 @@ class ProductFixture extends AbstractMagentoContext
             throw new \Exception('No Product ID found');
         }
 
+        $store = Mage::app()->getStore()->getStoreId();
+        Mage::app()->setCurrentStore(0);
         $product = Mage::getModel('catalog/product')->load($productId);
+        Mage::app()->setCurrentStore($store);
+
         if (is_null($product->getSku())) {
             throw new \Exception("No Product with an ID of $productId found");
         }
