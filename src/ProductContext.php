@@ -249,6 +249,28 @@ class ProductContext extends ProductFixture
     }
 
     /**
+     * @Given The product has the following tiered prices
+     */
+    public function theProductHasTheFollowingTieredPrices(TableNode $table)
+    {
+        $tiers = array();
+
+        foreach ($table as $row) {
+            $tiers[] = (object) array(
+                'website' => 'all',
+                'customer_group_id' => 'all',
+                'qty' => $row['Min Amount'],
+                'price' => $row['Price']
+            );
+        }
+
+        $tierPriceApi = Mage::getSingleton('catalog/product_attribute_tierprice_api_v2');
+        $tierPriceApi->update($this->_productId, $tiers);
+    }
+
+
+
+    /**
      * @Given I have added :qty of the product to my cart
      */
     public function iHaveAddedOfTheProductToMyCart($qty)
