@@ -29,6 +29,12 @@ class MagentoOneContext extends AbstractMagentoContext
             case 'checkout success':
                 $expectedUrl = '/checkout/onepage/success/';
                 break;
+            case 'login':
+                $expectedUrl = '/customer/account/login/';
+                break;
+            case 'account':
+                $expectedUrl = '/customer/account/';
+                break;
             default:
                 throw new \Exception("Unknown page type $page");
         }

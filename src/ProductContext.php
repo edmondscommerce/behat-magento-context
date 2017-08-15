@@ -206,7 +206,10 @@ class ProductContext extends ProductFixture
      */
     public function iAmTestingASimpleProductWithAnSkuOfTest($sku)
     {
+        $store = Mage::app()->getStore()->getStoreId();
+        Mage::app()->setCurrentStore(0);
         $product = Mage::getModel('catalog/product')->loadByAttribute('sku', $sku);
+        Mage::app()->setCurrentStore($store);
         if(is_object($product) && !is_null($product->getId())) {
             $this->_productModel = $product;
             $this->_productId = $product->getId();
@@ -244,6 +247,28 @@ class ProductContext extends ProductFixture
     {
         $this->setAttribute('tax_class_id', 0);
     }
+
+    /**
+     * @Given The product has the following tiered prices
+     */
+    public function theProductHasTheFollowingTieredPrices(TableNode $table)
+    {
+        $tiers = array();
+
+        foreach ($table as $row) {
+            $tiers[] = (object) array(
+                'website' => 'all',
+                'customer_group_id' => 'all',
+                'qty' => $row['Min Amount'],
+                'price' => $row['Price']
+            );
+        }
+
+        $tierPriceApi = Mage::getSingleton('catalog/product_attribute_tierprice_api_v2');
+        $tierPriceApi->update($this->_productId, $tiers);
+    }
+
+
 
     /**
      * @Given I have added :qty of the product to my cart

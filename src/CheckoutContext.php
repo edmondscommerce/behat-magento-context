@@ -86,7 +86,7 @@ class CheckoutContext extends AbstractMagentoContext
 
         foreach ($fieldValues as $name => $value)
         {
-            $formWrapper->find('css', $name)->setValue($value);
+            $formWrapper->find('css', "input[name='$name'], select[name='$name']")->setValue($value);
         }
     }
 
