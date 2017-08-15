@@ -25,7 +25,7 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
     protected $_checkout;
     /** @var array */
     protected $_contextsToInclude = [
-        'FeatureContext'               => '_mink',
+        MinkContext::class               => '_mink',
         CartContext::class             => '_cart',
         CheckoutContext::class         => '_checkout',
         RedirectionContext::class      => '_redirect',
