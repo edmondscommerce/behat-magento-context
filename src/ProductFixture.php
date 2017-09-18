@@ -31,6 +31,10 @@ class ProductFixture extends AbstractMagentoContext
         $this->_productId = $productId;
         $product          = Mage::getModel('catalog/product')->load($productId);
 
+        //Emulate the admin
+        $emulator = Mage::getSingleton('core/app_emulation');
+        $initialEnv = $emulator->startEnvironmentEmulation(0);
+
         #$product->unsetData();
         if (is_null($product->getId())) {
             $product->setId($productId);
@@ -43,11 +47,21 @@ class ProductFixture extends AbstractMagentoContext
             $product->setData($key, $value);
         }
 
+        //Add to all websites by default
+        $websiteIds = array_map(function(\Mage_Core_Model_Website $website) {
+            return $website->getId();
+        }, Mage::app()->getWebsites());
+        $product->setWebsiteIds($websiteIds);
+
         // Prevent options being saved multiple times
         $product->getOptionInstance()->unsetOptions();
+        $product->setOrigData();
         $product->save();
         $this->_productModel = $product;
         Mage::app()->cleanCache();
+
+        //Done, end emulation
+        $emulator->stopEnvironmentEmulation($initialEnv);
 
         return $product;
     }
