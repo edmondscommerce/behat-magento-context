@@ -49,7 +49,20 @@ class ProductContext extends ProductFixture
      */
     public function iAddOfTheProductToTheCart($arg1)
     {
-        
+        $this->iAmOnTheProductPage();
+        $this->iAddToCart();
+    }
+
+    /**
+     * Sets a product attribute to the value given
+     * @Given /^the product attribute "([^"]*)" is "([^"]*)"$/
+     */
+    public function theProductAttributeIs($attribute, $value)
+    {
+        $product = $this->getTheProduct();
+
+        $product->setData($attribute, $value);
+        $product->save();
     }
 
     /**
@@ -207,7 +220,6 @@ class ProductContext extends ProductFixture
     public function iAmTestingASimpleProductWithAnSkuOfTest($sku)
     {
         $store = Mage::app()->getStore()->getStoreId();
-        Mage::app()->setCurrentStore(0);
         $product = Mage::getModel('catalog/product')->loadByAttribute('sku', $sku);
         Mage::app()->setCurrentStore($store);
         if(is_object($product) && !is_null($product->getId())) {
@@ -268,7 +280,13 @@ class ProductContext extends ProductFixture
         $tierPriceApi->update($this->_productId, $tiers);
     }
 
-
+    /**
+     * @Given /^the product is available$/
+     */
+    public function theProductIsAvailable()
+    {
+        $this->setAttribute('status', \Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
+    }
 
     /**
      * @Given I have added :qty of the product to my cart

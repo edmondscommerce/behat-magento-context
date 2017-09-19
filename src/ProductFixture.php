@@ -6,6 +6,7 @@
  * @author   Ross Mitchell <ross@edmondscommerce.co.uk>
  */
 
+use Behat\Behat\Tester\Exception\PendingException;
 use Exception;
 use Mage;
 use Mage_Catalog_Model_Product;
@@ -130,6 +131,7 @@ class ProductFixture extends AbstractMagentoContext
         if (is_null($product->getSku())) {
             throw new \Exception("No Product with an ID of $productId found");
         }
+
         
         if(!is_null($this->_storeId)) {
             $product->setStoreId($this->_storeId);
@@ -162,7 +164,7 @@ class ProductFixture extends AbstractMagentoContext
             'sku'               => 'behat_product',
             'name'              => 'Behat Product',
             'weight'            => 4.0000,
-            'status'            => 1,
+            'status'            => \Mage_Catalog_Model_Product_Status::STATUS_ENABLED,
             'tax_class_id'      => $this->_getBehatTaxClass(),
             'visibility'        => Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH,
             'price'             => 11.22,
@@ -191,4 +193,6 @@ class ProductFixture extends AbstractMagentoContext
 
         return $taxClass->getId();
     }
+
+
 }
