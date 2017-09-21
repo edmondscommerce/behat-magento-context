@@ -4,6 +4,7 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
+use Behat\Mink\Exception\ExpectationException;
 use Exception;
 use Mage;
 
@@ -137,10 +138,17 @@ class CartContext extends AbstractMagentoContext implements Context, SnippetAcce
     {
         $this->visitPath('/checkout/cart');
         $text = $this->getSession()->getPage()->getText();
-        if (false !== strpos($text, 'CLEAR SHOPPING CART'))
+
+        //Find the empty cart button
+        $xpath = '//*[contains(text(), "Empty Cart") or contains(text(), "Clear")]';
+        $search = $this->getSession()->getPage()->find('xpath', $xpath);
+
+        if($search === null)
         {
-            $this->_mink->pressButton('Clear Shopping Cart');
+            throw new ExpectationException('Could not find the clear cart button', $this->getSession()->getPage());
         }
+
+        $search->click();
     }
 
     /**
