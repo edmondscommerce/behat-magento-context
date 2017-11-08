@@ -37,3 +37,11 @@ default:
 
 The ProductContext has additional parameters that allow for easier navigation to different types of product,
 when these are not specified they will default to the sample data urls to ease prototyping of modules using the sample data.
+
+### Custom Contexts should extend `RawMinkContext`
+
+`AbstractMagentoContext::gatherContexts()` expects `Behat\MinkExtension\Context\MinkContext` to be specified in the behat.yml
+
+If the default `FeatureContext`, or any other Contexts extend this class too, Behat will complain that "Step 'x' is already defined in Class::method()".
+
+Contexts should therefore extend `Behat\MinkExtension\Context\RawMinkContext` instead
