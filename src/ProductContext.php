@@ -108,7 +108,8 @@ class ProductContext extends ProductFixture
      */
     public function iAddToCart()
     {
-        $this->_html->iClickOnTheFirstVisibleText('Add to Cart');
+        $cartText = $this::getMagentoConfigValue('addToCartText', "Add to Cart");
+        $this->_html->iClickOnTheFirstVisibleText($cartText);
         $this->_jsEvents->iWaitForDocumentReady();
     }
 

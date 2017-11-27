@@ -129,6 +129,7 @@ class CustomerContext extends CustomerFixture
      * exists before running the test
      *
      * @Given /^I am logged in$/
+     * @throws Exception
      */
     public function iAmLoggedIn()
     {

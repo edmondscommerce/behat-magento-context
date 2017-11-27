@@ -133,6 +133,7 @@ class CartContext extends AbstractMagentoContext implements Context, SnippetAcce
 
     /**
      * @Given /^have an empty cart$/
+     * @throws ExpectationException
      */
     public function haveAnEmptyCart()
     {
@@ -140,12 +141,12 @@ class CartContext extends AbstractMagentoContext implements Context, SnippetAcce
         $text = $this->getSession()->getPage()->getText();
 
         //Find the empty cart button
-        $xpath = '//*[contains(text(), "Empty Cart") or contains(text(), "Clear")]';
+        $xpath = '//*[contains(text(), "Empty Cart") or contains(text(), "Clear") or contains(text(), "Shopping Cart is Empty")]';
         $search = $this->getSession()->getPage()->find('xpath', $xpath);
 
         if($search === null)
         {
-            throw new ExpectationException('Could not find the clear cart button', $this->getSession()->getPage());
+            throw new ExpectationException('Could not find the clear cart button', $this->getSession()->getDriver());
         }
 
         $search->click();

@@ -84,9 +84,9 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
      * @param $key
      * @return string|null
      */
-    public static function getMagentoConfigValue($key)
+    public static function getMagentoConfigValue($key, $default = null)
     {
-        return (isset(self::$_magentoSetting[$key])) ? self::$_magentoSetting[$key] : null;
+        return (isset(self::$_magentoSetting[$key])) ? self::$_magentoSetting[$key] : $default;
     }
 
     /**
