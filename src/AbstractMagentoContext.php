@@ -63,7 +63,7 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
         $environment = $scope->getEnvironment();
         if (!$environment->getSuite()->hasSetting('parameters'))
         {
-            throw new \Exception('You must set the parameters scetion of the behat.yml');
+            throw new \Exception('You must set the parameters section of the behat.yml');
         }
         $parameters = $environment->getSuite()->getSetting('parameters');
         if (!isset($parameters['magentoSettings']))
@@ -78,6 +78,15 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
         }
         self::$_magentoSetting = $magentoSetting;
         self::_loadMageFile();
+    }
+
+    /**
+     * @param $key
+     * @return string|null
+     */
+    public static function getMagentoConfigValue($key)
+    {
+        return (isset(self::$_magentoSetting[$key])) ? self::$_magentoSetting[$key] : null;
     }
 
     /**

@@ -2,6 +2,7 @@
 
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
+use Behat\Mink\Exception\ExpectationException;
 use Exception;
 use Mage;
 
@@ -96,7 +97,26 @@ class CustomerContext extends CustomerFixture
     public function iLogIn($email, $password)
     {
         $this->_jsEvents->iWaitForDocumentReady();
-        $this->_mink->clickLink('Log In');
+
+        //Override the default login button click if config set
+        $loginXpath = self::getMagentoConfigValue('loginXpath');
+        if($loginXpath !== null)
+        {
+            $node = $this->getSession()->getPage()->find('xpath', $loginXpath);
+            if($node)
+            {
+                $node->click();
+            }
+            else
+            {
+                throw new ExpectationException('Could not find log in button with Xpath: '.$loginXpath, $this->getSession()->getDriver());
+            }
+        }
+        else
+        {
+            $this->_mink->clickLink('Log In');
+        }
+
         $this->_jsEvents->iWaitForDocumentReady();
         $this->_mink->fillField('login[username]', $email);
         $this->_mink->fillField('login[password]', $password);
