@@ -25,7 +25,7 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
     protected $_checkout;
     /** @var array */
     protected $_contextsToInclude = [
-        MinkContext::class               => '_mink',
+        MinkContext::class             => '_mink',
         CartContext::class             => '_cart',
         CheckoutContext::class         => '_checkout',
         RedirectionContext::class      => '_redirect',
@@ -34,8 +34,12 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
         ProductContext::class          => '_product',
         CustomerContext::class         => '_customer',
         ScreenshotContext::class       => '_screenshot',
-        CategoryContext::class         => '_category'
+        CategoryContext::class         => '_category',
+        AdminDataGridContext::class    => '_adminGrid',
     ];
+
+    /** @var AdminDataGridContext */
+    protected $_adminGrid;
     /** @var HTMLContext */
     protected $_html;
     /** @var JavascriptEventsContext */
@@ -71,7 +75,7 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
             throw new \Exception('You must include the magentoSetting in the behat.yml file');
         }
         $magentoSetting = $parameters['magentoSettings'];
-        $pathToMage = $magentoSetting['pathToMage'];
+        $pathToMage     = $magentoSetting['pathToMage'];
         if (!file_exists($pathToMage))
         {
             throw new \Exception('You must provide a valid pathToMage path in the behat.yml file');
@@ -120,7 +124,7 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
             {
                 foreach (array_reverse($autoLoaders) AS $loader)
                 {
-                    $class = $loader[0];
+                    $class  = $loader[0];
                     $method = $loader[1];
                     spl_autoload_register(array($class, $method), true, true);
                 }
@@ -138,7 +142,7 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
     public function gatherContexts(BeforeScenarioScope $scope)
     {
         $environment = $scope->getEnvironment();
-        $contexts = $this->_getArrayOfContexts();
+        $contexts    = $this->_getArrayOfContexts();
         foreach ($contexts as $context => $classVar)
         {
             $this->$classVar = $environment->getContext($context);
@@ -158,7 +162,7 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
             return [];
         }
 
-        $excluded = isset($this->_contextsToExclude) ? $this->_contextsToExclude : [];
+        $excluded   = isset($this->_contextsToExclude) ? $this->_contextsToExclude : [];
         $excluded[] = get_class($this);
 
         foreach ($excluded AS $contextToExclude)
@@ -176,7 +180,7 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
     {
         return Mage::getUrl('checkout/cart/index', array(
             '_store' => Mage::app()->getDefaultStoreView()->getId(),
-            '_type'  => Mage_Core_Model_Store::URL_TYPE_WEB
+            '_type'  => Mage_Core_Model_Store::URL_TYPE_WEB,
         ));
     }
 }

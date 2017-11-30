@@ -1,4 +1,6 @@
-<?php namespace EdmondsCommerce\BehatMagentoOneContext;
+<?php
+
+namespace EdmondsCommerce\BehatMagentoOneContext;
 
 class DemonstrationContext extends AbstractMagentoContext
 {
