@@ -139,8 +139,18 @@ class CustomerContext extends CustomerFixture
         $this->visitPath('/');
         $this->iLogIn($this->_customerEmail, $this->_customerPassword);
         $text = $this->getSession()->getPage()->getText();
-        if (false !== strpos($text, 'Hello, Behat Customer!')) {
-            return;
+
+        $loginCheckXpath = self::getMagentoConfigValue('loginCheckXpath');
+        if(null === $loginCheckXpath) {
+            //Use the default behaviour, look for the login text
+            if (false !== strpos($text, 'Hello, Behat Customer!')) {
+                return;
+            }
+        }
+        else
+        {
+            //Search using the Xpath, if a node is returned then we are logged in
+            $this->_html->findOneOrFail('xpath', $loginCheckXpath, 'Unable to login, login check failed');
         }
 
         throw new Exception('unable to login');
