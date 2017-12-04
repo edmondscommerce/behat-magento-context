@@ -8,6 +8,7 @@
 namespace EdmondsCommerce\BehatMagentoOneContext;
 
 
+use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
 use Mage;
 
@@ -207,6 +208,16 @@ class AdminContext extends AdminFixture
         $this->_jsEvents->iWaitForDocumentReady();
         $this->_mink->assertPageContainsText('Behat Customer');
         
+    }
+
+    /**
+     * @Given /^I click the first order$/
+     */
+    public function iClickTheFirstOrder()
+    {
+        $firstOrder = "#sales_order_grid_table > tbody > tr:nth-child(1)";
+
+        $this->getSession()->getPage()->find('css', $firstOrder)->click();
     }
 
 }
