@@ -80,6 +80,9 @@ class CheckoutContext extends AbstractMagentoContext
             'shipping[city]'       => 'City',
             'shipping[postcode]'   => 'AB12 CDE',
             'shipping[region]'     => 'The Shire',
+        );
+
+        $optionalFieldValues = array(
             'shipping[company]'    => 'The Box Company',
             'shipping[fax]'        => '9876543210'
         );
@@ -87,6 +90,15 @@ class CheckoutContext extends AbstractMagentoContext
         foreach ($fieldValues as $name => $value)
         {
             $formWrapper->find('css', "input[name='$name'], select[name='$name']")->setValue($value);
+        }
+
+        foreach($optionalFieldValues as $name => $value)
+        {
+            $input = $formWrapper->find('css', "input[name='$name'], select[name='$name']");
+            if($input)
+            {
+                $input->setValue($value);
+            }
         }
     }
 
