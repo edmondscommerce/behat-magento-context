@@ -18,9 +18,9 @@ class CustomerContext extends CustomerFixture
     public function thereIsACustomer($email, $password)
     {
         $this->createCustomer($email, $password);
-        $customer       = $this->_customer;
+        $customer = $this->_customer;
         $customerQuotes = Mage::getModel('sales/quote')->getCollection()
-                              ->addFieldToFilter('customer_id', $customer->getId());
+            ->addFieldToFilter('customer_id', $customer->getId());
         foreach ($customerQuotes as $quote) {
             $quote->delete();
         }
@@ -88,7 +88,7 @@ class CustomerContext extends CustomerFixture
      *
      * This is used to test the login method
      *
-     * @param $email    - The email to log in with
+     * @param $email - The email to log in with
      * @param $password - The password to log in with
      *
      * @throws Exception
@@ -100,21 +100,22 @@ class CustomerContext extends CustomerFixture
 
         //Override the default login button click if config set
         $loginXpath = self::getMagentoConfigValue('loginXpath');
-        if($loginXpath !== null)
-        {
-            $node = $this->getSession()->getPage()->find('xpath', $loginXpath);
-            if($node)
-            {
-                $node->click();
+        if ($loginXpath !== null) {
+            $nodes = $this->getSession()->getPage()->findAll('xpath', $loginXpath);
+            if (empty($nodes)) {
+                throw new ExpectationException('Could not find log in button with Xpath: ' . $loginXpath, $this->getSession()->getDriver());
             }
-            else
-            {
-                throw new ExpectationException('Could not find log in button with Xpath: '.$loginXpath, $this->getSession()->getDriver());
+            $clicked = false;
+            foreach ($nodes as $node) {
+                if ($node && $node->isVisible()) {
+                    $node->click();
+                    $clicked = true;
+                    break;
+                }
             }
-        }
-        else
-        {
-            $this->_mink->clickLink('Log In');
+            if (!$clicked) {
+                throw new ExpectationException('Could not find a visible log in button with Xpath: ' . $loginXpath, $this->getSession()->getDriver());
+            }
         }
 
         $this->_jsEvents->iWaitForDocumentReady();
@@ -141,14 +142,12 @@ class CustomerContext extends CustomerFixture
         $text = $this->getSession()->getPage()->getText();
 
         $loginCheckXpath = self::getMagentoConfigValue('loginCheckXpath');
-        if(null === $loginCheckXpath) {
+        if (null === $loginCheckXpath) {
             //Use the default behaviour, look for the login text
             if (false !== strpos($text, 'Hello, Behat Customer!')) {
                 return;
             }
-        }
-        else
-        {
+        } else {
             //Search using the Xpath, if a node is returned then we are logged in
             $this->_html->findOneOrFail('xpath', $loginCheckXpath, 'Unable to login, login check failed');
         }
