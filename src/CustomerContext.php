@@ -171,4 +171,40 @@ class CustomerContext extends CustomerFixture
     {
         $this->getSession()->visit(Mage::getUrl('customer/account/index'));
     }
+
+
+    /**
+     * @Then /^The Invoice totals should be as follows$/
+     * @throws \Behat\Mink\Exception\ExpectationException
+     */
+    public function theCustomerFrontendInvoiceTotalsShouldBeAsFollows(TableNode $comparisonTable)
+    {
+        //Need to extract the totals, find the invoice table
+        $xpath = '//table[contains(@id, "my-invoice-table")]/tfoot';
+        $table = $this->_html->findOneOrFail('xpath', $xpath);
+        $tableData = $this->_html->getTable($table);
+
+        //Map the values
+        $totals = [];
+        foreach($tableData as $datum)
+        {
+            $totals[$datum[0]] = $datum[1];
+        }
+
+        //Compare with the given table
+        $comparisonTable = $comparisonTable->getRowsHash();
+
+        foreach($comparisonTable as $key => $item)
+        {
+            if(!isset($totals[$key]))
+            {
+                throw new ExpectationException('Could not find total '.$key, $this->getSession()->getDriver());
+            }
+
+            if($totals[$key] !== $item)
+            {
+                throw new ExpectationException('Total for '.$key .' ('.$totals[$key].') did not match '. $item, $this->getSession()->getDriver());
+            }
+        }
+    }
 }
