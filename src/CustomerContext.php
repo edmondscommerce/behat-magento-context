@@ -2,6 +2,7 @@
 
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
+use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\ExpectationException;
 use Exception;
 use Mage;
@@ -18,10 +19,11 @@ class CustomerContext extends CustomerFixture
     public function thereIsACustomer($email, $password)
     {
         $this->createCustomer($email, $password);
-        $customer = $this->_customer;
+        $customer       = $this->_customer;
         $customerQuotes = Mage::getModel('sales/quote')->getCollection()
             ->addFieldToFilter('customer_id', $customer->getId());
-        foreach ($customerQuotes as $quote) {
+        foreach ($customerQuotes as $quote)
+        {
             $quote->delete();
         }
     }
@@ -36,7 +38,8 @@ class CustomerContext extends CustomerFixture
      */
     public function theCustomerHasAnAttributeOf($attributeName, $attributeValue)
     {
-        if (is_null($this->_customer)) {
+        if (is_null($this->_customer))
+        {
             throw new Exception('The customer has not been set');
         }
         $customer = $this->_customer;
@@ -49,7 +52,8 @@ class CustomerContext extends CustomerFixture
      */
     public function iShouldBeLoggedIn()
     {
-        if (!Mage::getSingleton('customer/session')->isLoggedIn()) {
+        if (!Mage::getSingleton('customer/session')->isLoggedIn())
+        {
             throw new Exception('I am not logged in when I should be');
         }
     }
@@ -100,20 +104,25 @@ class CustomerContext extends CustomerFixture
 
         //Override the default login button click if config set
         $loginXpath = self::getMagentoConfigValue('loginXpath');
-        if ($loginXpath !== null) {
+        if ($loginXpath !== null)
+        {
             $nodes = $this->getSession()->getPage()->findAll('xpath', $loginXpath);
-            if (empty($nodes)) {
+            if (empty($nodes))
+            {
                 throw new ExpectationException('Could not find log in button with Xpath: ' . $loginXpath, $this->getSession()->getDriver());
             }
             $clicked = false;
-            foreach ($nodes as $node) {
-                if ($node && $node->isVisible()) {
+            foreach ($nodes as $node)
+            {
+                if ($node && $node->isVisible())
+                {
                     $node->click();
                     $clicked = true;
                     break;
                 }
             }
-            if (!$clicked) {
+            if (!$clicked)
+            {
                 throw new ExpectationException('Could not find a visible log in button with Xpath: ' . $loginXpath, $this->getSession()->getDriver());
             }
         }
@@ -134,7 +143,8 @@ class CustomerContext extends CustomerFixture
      */
     public function iAmLoggedIn()
     {
-        if (is_null($this->_customerEmail) || is_null($this->_customerPassword)) {
+        if (is_null($this->_customerEmail) || is_null($this->_customerPassword))
+        {
             throw new \Exception('You must create the customer before using this step');
         }
         $this->visitPath('/');
@@ -142,12 +152,15 @@ class CustomerContext extends CustomerFixture
         $text = $this->getSession()->getPage()->getText();
 
         $loginCheckXpath = self::getMagentoConfigValue('loginCheckXpath');
-        if (null === $loginCheckXpath) {
+        if (null === $loginCheckXpath)
+        {
             //Use the default behaviour, look for the login text
-            if (false !== strpos($text, 'Hello, Behat Customer!')) {
+            if (false !== strpos($text, 'Hello, Behat Customer!'))
+            {
                 return;
             }
-        } else {
+        } else
+        {
             //Search using the Xpath, if a node is returned then we are logged in
             $this->_html->findOneOrFail('xpath', $loginCheckXpath, 'Unable to login, login check failed');
         }
@@ -179,31 +192,66 @@ class CustomerContext extends CustomerFixture
      */
     public function theCustomerFrontendInvoiceTotalsShouldBeAsFollows(TableNode $comparisonTable)
     {
+        $this->getSession()->visit('https://www.staging.ipm.desktop.com/sales/order/invoice/order_id/602/');
         //Need to extract the totals, find the invoice table
-        $xpath = '//table[contains(@id, "my-invoice-table")]/tfoot';
-        $table = $this->_html->findOneOrFail('xpath', $xpath);
-        $tableData = $this->_html->getTable($table);
+        $comparisonTable = $comparisonTable->getRowsHash();
+        $xpath           = '//table[contains(@id, "my-invoice-table")]/tfoot';
+
+        $invoiceTables = array_map(function (NodeElement $element)
+        {
+            return $this->_html->getTable($element);
+        }, $this->_html->findAllOrFail('xpath', $xpath));
+
 
         //Map the values
         $totals = [];
-        foreach($tableData as $datum)
+        foreach ($invoiceTables as $tableData)
         {
-            $totals[$datum[0]] = $datum[1];
+            $tableDataTotal = [];
+            foreach ($tableData as $datum)
+            {
+                $tableDataTotal[$datum[0]] = $datum[1];
+            }
+            $totals[] = $tableDataTotal;
         }
 
-        //Compare with the given table
-        $comparisonTable = $comparisonTable->getRowsHash();
-
-        foreach($comparisonTable as $key => $item)
+        foreach ($totals as $totalTable)
         {
-            if(!isset($totals[$key]))
+            try
             {
-                throw new ExpectationException('Could not find total '.$key, $this->getSession()->getDriver());
+                $this->compareTableToInvoiceTable($comparisonTable, $totalTable);
+            } catch (ExpectationException $e)
+            {
+                //One row didn't get a match, skip the table
+                continue;
+            }
+        }
+
+        if ($e instanceof Exception)
+        {
+            throw $e;
+        }
+    }
+
+    /**
+     * Compares two table arrays
+     * @param array $comparisonTable
+     * @param $invoiceTableTotals
+     * @throws ExpectationException
+     */
+    public function compareTableToInvoiceTable(array $comparisonTable, $invoiceTableTotal)
+    {
+        //Compare with the given table
+        foreach ($comparisonTable as $key => $item)
+        {
+            if (!isset($invoiceTableTotal[$key]))
+            {
+                throw new ExpectationException('Could not find total ' . $key, $this->getSession()->getDriver());
             }
 
-            if($totals[$key] !== $item)
+            if ($invoiceTableTotal[$key] !== $item)
             {
-                throw new ExpectationException('Total for '.$key .' ('.$totals[$key].') did not match '. $item, $this->getSession()->getDriver());
+                throw new ExpectationException('Total for ' . $key . ' (' . $invoiceTableTotal[$key] . ') did not match ' . $item, $this->getSession()->getDriver());
             }
         }
     }
