@@ -216,12 +216,15 @@ class CustomerContext extends CustomerFixture
 
         foreach ($totals as $totalTable)
         {
+            $e = null;
             try
             {
                 $this->compareTableToInvoiceTable($comparisonTable, $totalTable);
+                //We passed if we got to this point, otherwise we'll check remaining (incorrect) tables and fail
+                return;
             } catch (ExpectationException $e)
             {
-                //One row didn't get a match, skip the table
+                //One row didn't get a match, skip the rest of the table
                 continue;
             }
         }
@@ -247,8 +250,8 @@ class CustomerContext extends CustomerFixture
             {
                 throw new ExpectationException('Could not find total ' . $key, $this->getSession()->getDriver());
             }
-
-            if ($invoiceTableTotal[$key] !== $item)
+            $value = $invoiceTableTotal[$key];
+            if ($value !== $item)
             {
                 throw new ExpectationException('Total for ' . $key . ' (' . $invoiceTableTotal[$key] . ') did not match ' . $item, $this->getSession()->getDriver());
             }
