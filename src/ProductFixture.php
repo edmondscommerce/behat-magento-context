@@ -65,8 +65,22 @@ class ProductFixture extends AbstractMagentoContext
         $product->save();
 
         $this->_productModel = $product;
+        $this->indexProduct($product);
 
+        Mage::app()->cleanCache();
 
+        //Done, end emulation
+        $emulator->stopEnvironmentEmulation($initialEnv);
+
+        return $product;
+    }
+
+    /**
+     * Indexes the product and reloads the product
+     * @param Mage_Catalog_Model_Product $product
+     */
+    public function indexProduct(\Mage_Catalog_Model_Product $product)
+    {
         //Index the product
         $event = Mage::getSingleton('index/indexer')->logEvent($product,
             $product->getResource()->getType(),
@@ -77,15 +91,8 @@ class ProductFixture extends AbstractMagentoContext
             ->setMode(\Mage_Index_Model_Process::MODE_REAL_TIME)
             ->processEvent($event);
 
-        //Reload the product to ensure the URL key is set
-        $product->load($productId);
-
-        Mage::app()->cleanCache();
-
-        //Done, end emulation
-        $emulator->stopEnvironmentEmulation($initialEnv);
-
-        return $product;
+        //Reloads the product's attributes
+        $product->load($product->getId());
     }
 
     public function getEmptyProductId($productId = null)
