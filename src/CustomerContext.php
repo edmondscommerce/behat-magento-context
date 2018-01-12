@@ -192,7 +192,6 @@ class CustomerContext extends CustomerFixture
      */
     public function theCustomerFrontendInvoiceTotalsShouldBeAsFollows(TableNode $comparisonTable)
     {
-        $this->getSession()->visit('https://www.staging.ipm.desktop.com/sales/order/invoice/order_id/602/');
         //Need to extract the totals, find the invoice table
         $comparisonTable = $comparisonTable->getRowsHash();
         $xpath           = '//table[contains(@id, "my-invoice-table")]/tfoot';
