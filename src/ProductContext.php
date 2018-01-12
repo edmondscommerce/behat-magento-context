@@ -1,5 +1,6 @@
 <?php namespace EdmondsCommerce\BehatMagentoOneContext;
 
+use Behat\Behat\Hook\Scope\AfterScenarioScope;
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Element\NodeElement;
@@ -231,7 +232,7 @@ class ProductContext extends ProductFixture
         }
         $productId = $this->getEmptyProductId();
         $this->_productId = $productId;
-        $this->createProduct($productId, ['sku' => $sku]);
+        $this->_productModel = $this->createProduct($productId, ['sku' => $sku]);
     }
 
     /**

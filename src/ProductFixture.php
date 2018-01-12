@@ -33,32 +33,53 @@ class ProductFixture extends AbstractMagentoContext
         $product          = Mage::getModel('catalog/product')->load($productId);
 
         //Emulate the admin
-        $emulator = Mage::getSingleton('core/app_emulation');
+        $emulator   = Mage::getSingleton('core/app_emulation');
         $initialEnv = $emulator->startEnvironmentEmulation(0);
 
         #$product->unsetData();
-        if (is_null($product->getId())) {
+        if (is_null($product->getId()))
+        {
             $product->setId($productId);
         }
         $requiredAttribute = $this->_getRequiredProductAttributes();
-        foreach ($requiredAttribute as $key => $value) {
+        foreach ($requiredAttribute as $key => $value)
+        {
             $product->setData($key, $value);
         }
-        foreach ($data as $key => $value) {
+
+        foreach ($data as $key => $value)
+        {
             $product->setData($key, $value);
         }
 
         //Add to all websites by default
-        $websiteIds = array_map(function(\Mage_Core_Model_Website $website) {
+        $websiteIds = array_map(function (\Mage_Core_Model_Website $website)
+        {
             return $website->getId();
         }, Mage::app()->getWebsites());
         $product->setWebsiteIds($websiteIds);
 
         // Prevent options being saved multiple times
         $product->getOptionInstance()->unsetOptions();
-        $product->setOrigData();
+        //$product->setOrigData();
         $product->save();
+
         $this->_productModel = $product;
+
+
+        //Index the product
+        $event = Mage::getSingleton('index/indexer')->logEvent($product,
+            $product->getResource()->getType(),
+            \Mage_Index_Model_Event::TYPE_SAVE,
+            false);
+
+        Mage::getSingleton('index/indexer')->getProcessByCode('catalog_url')
+            ->setMode(\Mage_Index_Model_Process::MODE_REAL_TIME)
+            ->processEvent($event);
+
+        //Reload the product to ensure the URL key is set
+        $product->load($productId);
+
         Mage::app()->cleanCache();
 
         //Done, end emulation
@@ -69,14 +90,16 @@ class ProductFixture extends AbstractMagentoContext
 
     public function getEmptyProductId($productId = null)
     {
-        if(is_null($productId)) {
+        if (is_null($productId))
+        {
             $productId = 999999;
         }
         $product = Mage::getModel('catalog/product')->load($productId);
-        if(is_null($product->getSku())) {
+        if (is_null($product->getSku()))
+        {
             return $productId;
         }
-        
+
         $productId++;
         return $this->getEmptyProductId($productId);
     }
@@ -89,13 +112,16 @@ class ProductFixture extends AbstractMagentoContext
      */
     public function getTheProduct()
     {
-        if (is_null($this->_productId)) {
+        if (is_null($this->_productId))
+        {
             throw new Exception('The product under test has not been set');
         }
 
-        if ($this->_productModel) {
+        if ($this->_productModel)
+        {
             return $this->_productModel;
-        } else {
+        } else
+        {
             throw new Exception("The product under test does not exist");
         }
 
@@ -106,7 +132,7 @@ class ProductFixture extends AbstractMagentoContext
     {
         $this->_storeId = $storeId;
     }
-    
+
     /**
      * @param      $attributeCode
      * @param      $value
@@ -116,10 +142,12 @@ class ProductFixture extends AbstractMagentoContext
      */
     public function setAttribute($attributeCode, $value, $productId = null)
     {
-        if (is_null($productId)) {
+        if (is_null($productId))
+        {
             $productId = $this->_productId;
         }
-        if (is_null($productId)) {
+        if (is_null($productId))
+        {
             throw new \Exception('No Product ID found');
         }
 
@@ -128,12 +156,14 @@ class ProductFixture extends AbstractMagentoContext
         $product = Mage::getModel('catalog/product')->load($productId);
         Mage::app()->setCurrentStore($store);
 
-        if (is_null($product->getSku())) {
+        if (is_null($product->getSku()))
+        {
             throw new \Exception("No Product with an ID of $productId found");
         }
 
-        
-        if(!is_null($this->_storeId)) {
+
+        if (!is_null($this->_storeId))
+        {
             $product->setStoreId($this->_storeId);
         }
 
@@ -144,10 +174,12 @@ class ProductFixture extends AbstractMagentoContext
     public function getProductAttribute($attribute)
     {
         $product = $this->_productModel;
-        if (is_null($product->getId())) {
+        if (is_null($product->getId()))
+        {
             $product = Mage::getModel('catalog/product')->load($this->_productId);
         }
-        if (is_null($product->getId())) {
+        if (is_null($product->getId()))
+        {
             throw new \Exception('No Product has been set');
         }
 
@@ -177,7 +209,7 @@ class ProductFixture extends AbstractMagentoContext
                 'manage_stock'            => 1,
                 'min_sale_qty'            => 1,
                 'is_in_stock'             => 1,
-                'qty'                     => 999
+                'qty'                     => 999,
             ],
         ];
     }
@@ -185,8 +217,9 @@ class ProductFixture extends AbstractMagentoContext
     protected function _getBehatTaxClass()
     {
         $taxClass = Mage::getModel('tax/class')->getCollection()->addFieldToFilter('class_name', 'Behat Tax Rate')
-                        ->addFieldToFilter('class_type', 'PRODUCT')->getFirstItem();
-        if (is_null($taxClass->getId())) {
+            ->addFieldToFilter('class_type', 'PRODUCT')->getFirstItem();
+        if (is_null($taxClass->getId()))
+        {
             $taxClass->setData('class_name', 'Behat Tax Rate')->setData('class_type', 'PRODUCT');
             $taxClass->save();
         }
