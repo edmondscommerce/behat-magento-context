@@ -35,6 +35,9 @@ class MagentoOneContext extends AbstractMagentoContext
             case 'account':
                 $expectedUrl = '/customer/account/';
                 break;
+                case 'cart':
+                $expectedUrl = '/checkout/cart/';
+                break;
             default:
                 throw new \Exception("Unknown page type $page");
         }
