@@ -21,7 +21,7 @@ class CartContext extends AbstractMagentoContext implements Context, SnippetAcce
         $this->_html->iClickOnTheElement('.skip-cart');
     }
 
-    
+
     /**
      * @When /^I click on the empty cart link$/
      */
@@ -52,8 +52,7 @@ class CartContext extends AbstractMagentoContext implements Context, SnippetAcce
     {
         $field = $this->getProductQuantityFromCartPage();
 
-        if (intval($field->getValue()) != intval($arg1))
-        {
+        if (intval($field->getValue()) != intval($arg1)) {
             throw new Exception('Expected a product quantity of ' . $arg1 . ' but found ' . $field->getValue());
         }
     }
@@ -74,8 +73,7 @@ class CartContext extends AbstractMagentoContext implements Context, SnippetAcce
     public function iSetTheQuantityTo($arg1)
     {
         $el = $this->getSession()->getPage()->find('css', '#qty');
-        if(!$el)
-        {
+        if (!$el) {
             throw new Exception('Could not find the quantity field on the product page');
         }
         $el->setValue($arg1);
@@ -87,14 +85,6 @@ class CartContext extends AbstractMagentoContext implements Context, SnippetAcce
     protected function getProductQuantityFromCartPage()
     {
         return $this->getSession()->getPage()->find('css', '#shopping-cart-table .input-text.qty');
-    }
-
-    /**
-     * @When /^I click on the Empty Cart link$/
-     */
-    public function iClickOnTheEmptyCartLink1()
-    {
-        //$el = $this->getSession()->getPage()-
     }
 
     /**
@@ -144,8 +134,7 @@ class CartContext extends AbstractMagentoContext implements Context, SnippetAcce
         $xpath = '//*[contains(text(), "Empty Cart") or contains(text(), "Clear") or contains(text(), "Shopping Cart is Empty")]';
         $search = $this->getSession()->getPage()->find('xpath', $xpath);
 
-        if($search === null)
-        {
+        if ($search === null) {
             throw new ExpectationException('Could not find the clear cart button', $this->getSession()->getDriver());
         }
 
@@ -165,7 +154,7 @@ class CartContext extends AbstractMagentoContext implements Context, SnippetAcce
      */
     public function iCanSeePriceInCart($arg1)
     {
-        
+
     }
-    
+
 }
