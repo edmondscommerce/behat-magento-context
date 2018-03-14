@@ -19,7 +19,7 @@
     "minimum-stability": "dev",
     "require": {
         "behat/behat": "~3.0",
-        "edmondscommerce/behat-html-context": "dev-master",
+        "edmondscommerce/behat-html-context": "0.0.1",
         "edmondscommerce/behat-javascript-context": "dev-master"
     },
     "autoload": {
