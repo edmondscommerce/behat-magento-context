@@ -30,7 +30,7 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
      */
     public function iShouldSeeTheProductsInAGrid()
     {
-        $this->getSession()->getPage()->has('css', 'ul.products-grid');
+        return $this->getSession()->getPage()->has('css', 'ul.products-grid');
     }
 
     /**
@@ -38,7 +38,7 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
      */
     public function iShouldSeeTheProductsInAList()
     {
-        $this->getSession()->getPage()->has('css', 'ul.products-list');
+        return $this->getSession()->getPage()->has('css', 'ol.products-list');
     }
 
 
@@ -53,6 +53,8 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
         {
             throw new Exception('There are ' . $count . ' products on the page but we expected ' . $arg1);
         }
+
+        return $count;
     }
 
     /**
@@ -60,17 +62,17 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
      */
     public function iSelectThe($arg1)
     {
-        if ($arg1 === 'grid')
-        {
-            $this->iChangeProductDisplayModeToGrid();
+        switch ($arg1) {
+            case 'grid':
+                $this->iChangeProductDisplayModeToGrid();
+                break;
+            case 'list':
+                $this->iChangeProductDisplayModeToList();
+                break;
+            default:
+                throw new Exception('Unknown product display mode ' . $arg1);
+                break;
         }
-
-        if ($arg1 === 'list')
-        {
-            $this->iChangeProductDisplayModeToList();
-        }
-
-        throw new Exception('Unknown product display mode ' . $arg1);
     }
 
     /**
