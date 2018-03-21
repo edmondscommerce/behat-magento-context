@@ -18,12 +18,26 @@
     ],
     "require": {
         "behat/behat": "~3.0",
-        "edmondscommerce/behat-html-context": "0.0.1",
+        "edmondscommerce/behat-html-context": "dev-master",
         "edmondscommerce/behat-javascript-context": "dev-master"
+    },
+    "require-dev": {
+        "edmondscommerce/phpqa": "dev-master",
+        "edmondscommerce/mock-server": "dev-master@dev",
+        "behat/mink-selenium2-driver": "^1.3@dev",
+        "edmondscommerce/selenium-server": "dev-master"
+    },
+    "config": {
+        "bin-dir": "bin"
     },
     "autoload": {
         "psr-4": {
             "EdmondsCommerce\\BehatMagentoOneContext\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "EdmondsCommerce\\BehatMagentoOneContext\\": "tests/"
         }
     }
 }
