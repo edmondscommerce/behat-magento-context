@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "fa17a23ba3e2124fc918274f857a57c6",
+    "content-hash": "a109db3803485802507c4b8da4759a86",
     "packages": [
         {
             "name": "behat/behat",
@@ -443,6 +443,49 @@
                 "testing"
             ],
             "time": "2018-03-21T11:48:50+00:00"
+        },
+        {
+            "name": "edmondscommerce/behat-screenshot-context",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/edmondscommerce/behat-screenshot-context.git",
+                "reference": "e24d40a1c5e94d1f0151a4d504293c0188806743"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/edmondscommerce/behat-screenshot-context/zipball/e24d40a1c5e94d1f0151a4d504293c0188806743",
+                "reference": "e24d40a1c5e94d1f0151a4d504293c0188806743",
+                "shasum": ""
+            },
+            "suggest": {
+                "edmondscommerce/behat-framework": "Parent framework, allows easier behat setup"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "EdmondsCommerce\\BehatScreenshotContext\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "edmondscommerce",
+                    "email": "info@edmondscommerce.co.uk"
+                }
+            ],
+            "description": "A Behat Context for taking screenshots",
+            "homepage": "https://www.edmondscommerce.co.uk",
+            "keywords": [
+                "Behat",
+                "Browser Testing",
+                "screenshot",
+                "testing"
+            ],
+            "time": "2018-03-21T10:44:43+00:00"
         },
         {
             "name": "psr/container",
@@ -4386,6 +4429,7 @@
     "stability-flags": {
         "edmondscommerce/behat-html-context": 20,
         "edmondscommerce/behat-javascript-context": 20,
+        "edmondscommerce/behat-screenshot-context": 20,
         "edmondscommerce/phpqa": 20,
         "edmondscommerce/mock-server": 20,
         "behat/mink-selenium2-driver": 20,

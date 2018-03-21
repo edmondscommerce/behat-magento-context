@@ -19,7 +19,8 @@
     "require": {
         "behat/behat": "~3.0",
         "edmondscommerce/behat-html-context": "dev-master",
-        "edmondscommerce/behat-javascript-context": "dev-master"
+        "edmondscommerce/behat-javascript-context": "dev-master",
+        "edmondscommerce/behat-screenshot-context": "dev-master"
     },
     "require-dev": {
         "edmondscommerce/phpqa": "dev-master",
