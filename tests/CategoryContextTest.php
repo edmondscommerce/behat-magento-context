@@ -24,7 +24,12 @@ class CategoryContextTest extends AbstractTestCase {
         parent::setUp();
 
         //Set up the mock server
-        $this->server = new MockServer(__DIR__ . '/assets/routers/CategoryRouter.php', $this->getContainerIp(), 8080);
+        $this->server = new MockServer(
+            __DIR__ . '/assets/routers/CategoryRouter.php',
+            __DIR__. '/assets/routers/httpdocs',
+            $this->getContainerIp(),
+            8080
+        );
         $this->server->startServer();
 
         $mink = new Mink(['selenium2' => $this->seleniumSession]);
@@ -132,11 +137,42 @@ class CategoryContextTest extends AbstractTestCase {
 
         $this->seleniumSession->visit($url);
 
-        $productCountInThePage = 12;
+        $productCountInThePage = 24;
 
         $this->context->iSelectToShowProducts($productCountInThePage);
-
+        
         $this->assertEquals($productCountInThePage, $this->context->iShouldSeeProductsOnThePage($productCountInThePage));
     }
 
+    public function testAmTestingACategoryWithAnIdOf3() {
+        $categoryId = 3;
+
+        $this->context->iAmTestingACategoryWithAnIdOf($categoryId);
+
+        $this->assertEquals($categoryId, $this->context->getCategoryId());
+    }
+
+    public function testAmOnTheCategoryPage() {
+        $url = $this->server->getUrl('/products-grid-category');
+
+        $this->seleniumSession->visit($url);
+
+        $this->assertTrue($this->context->iAmOnTheCategoryPage());
+    }
+
+    public function testthereAreMultipleProductsInTheCategoryWillFindProducts() {
+        $url = $this->server->getUrl('/products-grid-category');
+
+        $this->seleniumSession->visit($url);
+
+        $this->assertTrue($this->context->thereAreMultipleProductsInTheCategory());
+    }
+
+    public function testthereAreMultipleProductsInTheCategoryWillFindNoProducts() {
+        $url = $this->server->getUrl('/products-grid-category-0');
+
+        $this->seleniumSession->visit($url);
+
+        $this->assertFalse($this->context->thereAreMultipleProductsInTheCategory());
+    }
 }

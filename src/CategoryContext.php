@@ -95,12 +95,17 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
     /**
      * @Given /^I am limiting the category to (\d+) products$/
      * @When /^I select to show (\d+) products$/
+     * @throws Exception
      */
     public function iSelectToShowProducts($arg1)
     {
-        $limiter = $this->getSession()->getPage()->find('css', 'limiter select');
+        $limiter = $this->getSession()->getPage()->find('css', '.limiter select');
 
-        $limiter->setValue($arg1);
+        if (null === $limiter) {
+            throw new \UnexpectedValueException('Results per page limiter not found.');
+        }
+
+        $limiter->selectOption($arg1);
     }
     
     /**
@@ -116,7 +121,7 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
      */
     public function thereAreMultipleProductsInTheCategory()
     {
-        throw new PendingException();
+        return (bool) count($this->getSession()->getPage()->findAll('css', '.product-name'));
     }
 
 
@@ -158,6 +163,6 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
      */
     public function iAmOnTheCategoryPage()
     {
-        
+        return $this->getSession()->getPage()->has('css', 'body.catalog-category-view');
     }
 }
