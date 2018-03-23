@@ -3,7 +3,9 @@
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Behat\Tester\Exception\PendingException;
+use Behat\Mink\Exception\ElementNotFoundException;
 use Exception;
+use UnexpectedValueException;
 
 class CategoryContext extends CategoryFixture implements Context, SnippetAcceptingContext
 {
@@ -102,7 +104,7 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
         $limiter = $this->getSession()->getPage()->find('css', '.limiter select');
 
         if (null === $limiter) {
-            throw new \UnexpectedValueException('Results per page limiter not found.');
+            throw new UnexpectedValueException('Results per page limiter not found.');
         }
 
         $limiter->selectOption($arg1);
@@ -134,11 +136,34 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
     }
 
     /**
-     * @Given /^The products are sorted by (.*) ([^ ]*)$/
+     * @Given The products are sorted by :order and :direction direction
      */
-    public function theProductsAreSortedByPositionAscending()
+    public function theProductsAreSortedByOrderMethodAndDirection($order, $direction = 'asc')
     {
-        throw new PendingException();
+        $page = $this->getSession()->getPage();
+        $select = $page->find('css', '.sorter .sort-by select');
+        if (null === $select) {
+            throw new Exception('Sort by selector not found');
+        }
+
+        $select->selectOption($order);
+
+        // $select->isSelected() doesn't seem to work, therefore doing a workaround using containsText function
+        $optionValue = $this->containsText(strtolower($order), $select->getValue());
+
+        $directionSwitcher = $page->find('css', '.sorter .sort-by .sort-by-switcher');
+        if (null === $directionSwitcher) {
+            throw new Exception('Sort by switcher not found');
+        }
+
+        $directionSwitcherClass = $directionSwitcher->getAttribute('class');
+        $directionValue = $this->containsText('sort-by-switcher--' . $direction, $directionSwitcherClass);
+
+        return $optionValue === true && $directionValue === true;
+    }
+
+    public function containsText($needle, $haystack) {
+        return mb_strpos($haystack, $needle) !== false;
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace EdmondsCommerce\BehatMagentoOneContext;
 
+use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Mink;
 use EdmondsCommerce\MockServer\MockServer;
 
@@ -140,7 +141,7 @@ class CategoryContextTest extends AbstractTestCase {
         $productCountInThePage = 24;
 
         $this->context->iSelectToShowProducts($productCountInThePage);
-        
+
         $this->assertEquals($productCountInThePage, $this->context->iShouldSeeProductsOnThePage($productCountInThePage));
     }
 
@@ -175,4 +176,49 @@ class CategoryContextTest extends AbstractTestCase {
 
         $this->assertFalse($this->context->thereAreMultipleProductsInTheCategory());
     }
+
+    public function testTheProductsAreSortedByPositionAscending() {
+        $url = $this->server->getUrl('/products-grid-category');
+
+        $this->seleniumSession->visit($url);
+
+        $this->assertTrue($this->context->theProductsAreSortedByOrderMethodAndDirection('Position'));
+    }
+
+    public function testTheProductsAreSortedByNameAscending() {
+        $url = $this->server->getUrl('/products-grid-category-sort-by-name');
+
+        $this->seleniumSession->visit($url);
+
+        $this->assertTrue($this->context->theProductsAreSortedByOrderMethodAndDirection('Name'));
+    }
+
+    public function testTheProductsAreSortedByPriceAscending() {
+        $url = $this->server->getUrl('/products-grid-category-sort-by-price');
+
+        $this->seleniumSession->visit($url);
+
+        $this->assertTrue($this->context->theProductsAreSortedByOrderMethodAndDirection('Price'));
+    }
+
+    public function testTheProductsAreSortedByOrderMethodAndDirectionAndSortBySelectorNotFound() {
+        $url = $this->server->getUrl('/products-grid-category-sort-by-select-notfound');
+
+        $this->seleniumSession->visit($url);
+
+        $this->expectException(\Exception::class);
+
+        $this->context->theProductsAreSortedByOrderMethodAndDirection('Price');
+    }
+
+    public function testTheProductsAreSortedByOrderMethodAndDirectionSortByOptionNotFound() {
+        $url = $this->server->getUrl('/products-grid-category');
+
+        $this->seleniumSession->visit($url);
+
+        $this->expectException(ElementNotFoundException::class);
+
+        $this->assertTrue($this->context->theProductsAreSortedByOrderMethodAndDirection('InexistantSortBy'));
+    }
+
 }

@@ -19,6 +19,27 @@ $router->addCallbackRoute('/products-grid-category', '', function () {
 
     return str_replace($search, $replace, $subject);
 });
+$router->addCallbackRoute('/products-grid-category-sort-by-name', '', function () {
+    $search = ['IP_ADDRESS'];
+    $replace = [ContainerHelper::getContainerIp()];
+    $subject = file_get_contents(__DIR__."/html/Category/ProductsGridCategorySortByName.html");
+
+    return str_replace($search, $replace, $subject);
+});
+$router->addCallbackRoute('/products-grid-category-sort-by-price', '', function () {
+    $search = ['IP_ADDRESS'];
+    $replace = [ContainerHelper::getContainerIp()];
+    $subject = file_get_contents(__DIR__."/html/Category/ProductsGridCategorySortByPrice.html");
+
+    return str_replace($search, $replace, $subject);
+});
+$router->addCallbackRoute('/products-grid-category-sort-by-select-notfound', '', function () {
+    $search = ['IP_ADDRESS'];
+    $replace = [ContainerHelper::getContainerIp()];
+    $subject = file_get_contents(__DIR__."/html/Category/ProductsGridCategorySortBySelectNotFound.html");
+
+    return str_replace($search, $replace, $subject);
+});
 $router->addCallbackRoute('/products-grid-category-24', '', function () {
     $search = ['IP_ADDRESS'];
     $replace = [ContainerHelper::getContainerIp()];
