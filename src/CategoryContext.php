@@ -128,14 +128,6 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
 
 
     /**
-     * @Given I am viewing the category as a :arg1
-     */
-    public function iAmViewingTheCategoryAsA($arg1)
-    {
-        throw new PendingException();
-    }
-
-    /**
      * @Given The products are sorted by :order and :direction direction
      */
     public function theProductsAreSortedByOrderMethodAndDirection($order, $direction = 'asc')
@@ -164,23 +156,6 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
 
     public function containsText($needle, $haystack) {
         return mb_strpos($haystack, $needle) !== false;
-    }
-
-    /**
-     * @Then There should be a product listed first in the grid
-     */
-    public function thereShouldBeAProductListedFirstInTheGrid()
-    {
-        throw new PendingException();
-    }
-
-
-    /**
-     * @Then There should be a new product listed first in the grid
-     */
-    public function thereShouldBeANewProductListedFirstInTheGrid()
-    {
-        throw new PendingException();
     }
 
     /**
