@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 readonly DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
 cd $DIR;
+set -e
+set -u
+set -o pipefail
 
 isSeleniumRunning=$(ps aux | grep se[l]enium | wc -l)
 
@@ -15,6 +18,6 @@ cd ../
 echo "Disabling xDebug"
 phpenv config-rm xdebug.ini
 
-eecho "Running the tests"
+echo "Running the tests"
 ./bin/phpunit -c ./phpunit.xml.dist ./tests
 
