@@ -15,7 +15,7 @@ before_script:
   - composer self-update
   - composer update ${COMPOSER_OPTS}
   - wget http://chromedriver.storage.googleapis.com/2.24/chromedriver_linux64.zip
-  - unzip chromedriver_linux64.zip -d /usr/local/bin/
+  - sudo unzip chromedriver_linux64.zip -d /usr/local/bin/
 
 script:
   - bash shellscripts/runTests.bash
