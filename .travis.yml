@@ -14,8 +14,7 @@ cache:
 before_script:
   - composer self-update
   - composer update ${COMPOSER_OPTS}
-  - wget http://chromedriver.storage.googleapis.com/2.24/chromedriver_linux64.zip
-  - sudo unzip chromedriver_linux64.zip -d /usr/local/bin/
+  - bash .travis/downloadChromeDriver.bash
 
 script:
   - bash shellscripts/runTests.bash
