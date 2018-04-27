@@ -47,7 +47,7 @@ abstract class AbstractTestCase extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->setUpSeleniumMink(false);
+        $this->setUpSeleniumMink();
     }
 
     /**

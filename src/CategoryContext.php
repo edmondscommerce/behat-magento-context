@@ -14,14 +14,12 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
      */
     public function iShouldSeeTheProductsInA($arg1)
     {
-        if ($arg1 === 'grid')
-        {
-            $this->iShouldSeeTheProductsInAGrid();
+        if ($arg1 === 'grid') {
+            return $this->iShouldSeeTheProductsInAGrid();
         }
 
-        if ($arg1 === 'list')
-        {
-            $this->iShouldSeeTheProductsInAList();
+        if ($arg1 === 'list') {
+            return $this->iShouldSeeTheProductsInAList();
         }
 
         throw new \Exception('Unknown product display type: ' . $arg1);
@@ -32,15 +30,30 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
      */
     public function iShouldSeeTheProductsInAGrid()
     {
-        return $this->getSession()->getPage()->has('css', 'ul.products-grid');
+        $gridExists = $this->getSession()->getPage()->has('css', 'ul.products-grid');
+
+        if ($gridExists === false) {
+
+            throw new ElementNotFoundException($this->getSession()->getDriver(), 'css', 'ul.products-grid');
+        }
+
+        return $gridExists;
     }
+
 
     /**
      * @Then The products should be displayed in a list
      */
     public function iShouldSeeTheProductsInAList()
     {
-        return $this->getSession()->getPage()->has('css', 'ol.products-list');
+        $listExists = $this->getSession()->getPage()->has('css', 'ol.products-list');
+
+        if ($listExists === false) {
+
+            throw new ElementNotFoundException($this->getSession()->getDriver(), 'css', 'ol.products-list');
+        }
+
+        return $listExists;
     }
 
 
@@ -51,8 +64,7 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
     {
         $productNames = $this->getSession()->getPage()->findAll('css', '.product-name');
         $count = count($productNames);
-        if ($count !== $arg1)
-        {
+        if ($count !== $arg1) {
             throw new Exception('There are ' . $count . ' products on the page but we expected ' . $arg1);
         }
 
@@ -66,10 +78,10 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
     {
         switch ($arg1) {
             case 'grid':
-                $this->iChangeProductDisplayModeToGrid();
+                return $this->iChangeProductDisplayModeToGrid();
                 break;
             case 'list':
-                $this->iChangeProductDisplayModeToList();
+                return $this->iChangeProductDisplayModeToList();
                 break;
             default:
                 throw new Exception('Unknown product display mode ' . $arg1);
@@ -83,6 +95,8 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
     public function iChangeProductDisplayModeToGrid()
     {
         $this->getSession()->getPage()->find('css', '.sorter .view-mode a.grid')->click();
+
+        return true;
     }
 
     /**
@@ -91,6 +105,8 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
     public function iChangeProductDisplayModeToList()
     {
         $this->getSession()->getPage()->find('css', '.sorter .view-mode a.list')->click();
+
+        return true;
     }
 
 
@@ -109,7 +125,7 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
 
         $limiter->selectOption($arg1);
     }
-    
+
     /**
      * @Given I am testing a category with an ID of :arg1
      */
@@ -123,7 +139,7 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
      */
     public function thereAreMultipleProductsInTheCategory()
     {
-        return (bool) count($this->getSession()->getPage()->findAll('css', '.product-name'));
+        return (bool)count($this->getSession()->getPage()->findAll('css', '.product-name'));
     }
 
 
@@ -154,7 +170,8 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
         return $optionValue === true && $directionValue === true;
     }
 
-    public function containsText($needle, $haystack) {
+    public function containsText($needle, $haystack)
+    {
         return mb_strpos($haystack, $needle) !== false;
     }
 
