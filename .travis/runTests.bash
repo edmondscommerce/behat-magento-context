@@ -3,7 +3,6 @@ readonly DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
 cd $DIR;
 set -e
 set -u
-set -o pipefail
 
 isSeleniumRunning=$(ps aux | grep se[l]enium | wc -l)
 
