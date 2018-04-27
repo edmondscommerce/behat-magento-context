@@ -1,0 +1,22 @@
+language: php
+
+sudo: required
+addons:
+  chrome: stable
+  apt:
+    packages:
+      - oracle-java8-installer
+      - oracle-java8-set-default
+      - unzip
+      - chromedriver
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+before_script:
+  - composer self-update
+  - composer update ${COMPOSER_OPTS}
+
+script:
+  - bash shellscripts/runTests.bash
