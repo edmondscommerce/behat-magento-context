@@ -5,6 +5,10 @@ php:
   - 7.1
   - 7.2
 
+env:
+  - COMPOSER_OPTS=""
+  - COMPOSER_OPTS="--prefer-lowest"
+
 sudo: required
 addons:
   chrome: stable
