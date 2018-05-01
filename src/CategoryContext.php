@@ -127,6 +127,27 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
     }
 
     /**
+     * @Then /^The limiter is set to (\d+) products per page$/
+     * @throws Exception
+     */
+    public function theLimiterIsSetTo($arg1)
+    {
+        $limiter = $this->getSession()->getPage()->find('css', '.limiter select');
+
+        if (null === $limiter) {
+            throw new UnexpectedValueException('Results per page limiter not found.');
+        }
+
+        $limiterValue = $limiter->getValue();
+
+        if(strpos($limiterValue, "limit=" . $arg1) !== false) {
+            return true;
+        }
+
+        throw new \Exception("The pager is set to " . $limiterValue . " instead of the expected " . $arg1);
+    }
+
+    /**
      * @Given I am testing a category with an ID of :arg1
      */
     public function iAmTestingACategoryWithAnIdOf($arg1)

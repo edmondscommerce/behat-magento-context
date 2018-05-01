@@ -335,4 +335,54 @@ class CategoryContextTest extends AbstractTestCase
         $this->context->iShouldSeeTheProductsInA('Unknown');
     }
 
+    public function testISelectToShowProducts()
+    {
+        $url = $this->server->getUrl('/products-list-category');
+
+        $this->seleniumSession->visit($url);
+
+        $this->context->iSelectToShowProducts(10);
+
+        $productsPerPageResult = $this->context->theLimiterIsSetTo(10);
+
+        $this->assertTrue($productsPerPageResult);
+    }
+
+    public function testISelectToShowProductsFails()
+    {
+        $url = $this->server->getUrl('/products-list-category');
+
+        $this->seleniumSession->visit($url);
+
+        $this->context->iSelectToShowProducts(10);
+
+        $this->expectException(\Exception::class);
+
+        $productsPerPageResult = $this->context->theLimiterIsSetTo(20);
+    }
+
+    public function testISelectToShowProductsInvalidPage()
+    {
+        $url = $this->server->getUrl('/');
+
+        $this->seleniumSession->visit($url);
+
+        $this->expectException(\UnexpectedValueException::class);
+
+        $this->context->iSelectToShowProducts(10);
+
+    }
+
+    public function testTheLimiterIsSetToNoLimiter()
+    {
+        $url = $this->server->getUrl('/');
+
+        $this->seleniumSession->visit($url);
+
+        $this->expectException(\UnexpectedValueException::class);
+
+        $this->context->theLimiterIsSetTo(10);
+
+    }
+
 }
