@@ -34,7 +34,7 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
 
         if ($gridExists === false) {
 
-            throw new ElementNotFoundException($this->getSession()->getDriver(), 'css', 'ul.products-grid');
+            throw new ElementNotFoundException($this->getSession()->getDriver(), 'element', 'css', 'ul.products-grid');
         }
 
         return $gridExists;
@@ -50,7 +50,7 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
 
         if ($listExists === false) {
 
-            throw new ElementNotFoundException($this->getSession()->getDriver(), 'css', 'ol.products-list');
+            throw new ElementNotFoundException($this->getSession()->getDriver(), 'element', 'css', 'ol.products-list');
         }
 
         return $listExists;
