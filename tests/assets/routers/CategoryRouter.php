@@ -61,5 +61,12 @@ $router->addCallbackRoute('/products-list-category', '', function () {
 
     return str_replace($search, $replace, $subject);
 });
+$router->addCallbackRoute('/products-list-category-no-sort-by-switcher', '', function () {
+    $search = ['IP_ADDRESS'];
+    $replace = [ContainerHelper::getContainerIp()];
+    $subject = file_get_contents(__DIR__."/html/Category/ProductsListCategoryNoSortBySwitcher.html");
+
+    return str_replace($search, $replace, $subject);
+});
 
 $router->run()->send();

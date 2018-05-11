@@ -385,4 +385,16 @@ class CategoryContextTest extends AbstractTestCase
 
     }
 
+    public function testSortBySelectExistsButNotSortBySwitcher()
+    {
+        $url = $this->server->getUrl('/products-list-category-no-sort-by-switcher');
+
+        $this->seleniumSession->visit($url);
+
+        $this->expectException(\Exception::class);
+
+        $this->context->theProductsAreSortedByOrderMethodAndDirection('price');
+
+    }
+
 }
