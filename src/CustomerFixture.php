@@ -55,16 +55,47 @@ class CustomerFixture extends AbstractMagentoContext
         $this->_customerEmail    = $email;
         $this->_customerPassword = $password;
         $this->_customer         = $customer;
+
+        return $customer;
     }
 
+    /**
+     * @return Mage_Customer_Model_Customer
+     *
+     * @throws \Exception
+     */
     public function getCustomer()
     {
-        if (is_null($this->_customer)) {
+        if (null === $this->_customer) {
             throw new \Exception('You must create the customer');
         }
 
         return $this->_customer;
     }
 
+    /**
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getCustomerEmail()
+    {
+        if (null === $this->_customerEmail) {
+            throw new \Exception('You must create the customer');
+        }
 
+        return $this->_customerEmail;
+    }
+
+    /**
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getCustomerPassword()
+    {
+        if (null === $this->_customerPassword) {
+            throw new \Exception('You must create the customer');
+        }
+
+        return $this->_customerPassword;
+    }
 }
