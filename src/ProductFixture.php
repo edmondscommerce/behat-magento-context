@@ -158,24 +158,36 @@ class ProductFixture extends AbstractMagentoContext
             throw new \Exception('No Product ID found');
         }
 
-        $store = Mage::app()->getStore()->getStoreId();
-        Mage::app()->setCurrentStore(0);
-        $product = Mage::getModel('catalog/product')->load($productId);
-        Mage::app()->setCurrentStore($store);
+        $product = $this->_productModel;
+        if ($product === null) {
+            $store = Mage::app()->getStore()->getStoreId();
+            Mage::app()->setCurrentStore(0);
+            $product = Mage::getModel('catalog/product')->load($productId);
+            Mage::app()->setCurrentStore($store);
+        }
 
         if (is_null($product->getSku()))
         {
             throw new \Exception("No Product with an ID of $productId found");
         }
 
-
+        /* If we are testing a specific store, let's avoid any issues around scope and just save the attribute */
         if (!is_null($this->_storeId))
         {
-            $product->setStoreId($this->_storeId);
+            Mage::getSingleton('catalog/product_action')->updateAttributes(
+                array($productId),
+                array($attributeCode => $value),
+                $this->_storeId
+            );
+
+            return;
         }
 
         $product->setData($attributeCode, $value);
+        $store = Mage::app()->getStore()->getStoreId();
+        Mage::app()->setCurrentStore(0);
         $product->save();
+        Mage::app()->setCurrentStore($store);
     }
 
     public function getProductAttribute($attribute)
