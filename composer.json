@@ -16,11 +16,10 @@
             "email": "info@edmondscommerce.co.uk"
         }
     ],
-    "minimum-stability": "dev",
     "require": {
-        "behat/behat": "~3.0",
-        "edmondscommerce/behat-html-context": "0.0.1",
-        "edmondscommerce/behat-javascript-context": "dev-master"
+        "behat/behat": "~3.3",
+        "edmondscommerce/behat-html-context": "dev-master@dev",
+        "edmondscommerce/behat-javascript-context": "dev-master@dev"
     },
     "autoload": {
         "psr-4": {

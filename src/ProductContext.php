@@ -244,6 +244,10 @@ class ProductContext extends ProductFixture
             $value = filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT);
         }
         $this->setAttribute($property, $value);
+        if ($property == 'price') {
+            $ids = [$this->_productId];
+            Mage::getResourceModel('catalog/product_indexer_price')->reindexProductIds($ids);
+        }
     }
 
     /**
@@ -295,6 +299,8 @@ class ProductContext extends ProductFixture
      */
     public function iHaveAddedOfTheProductToMyCart($qty)
     {
+        # Lets make sure all of the changes that we have made appear on screen
+        Mage::app()->cleanCache();
         $url = $this->getProductAttribute('url_path');
         self::$_magentoSetting['simpleUri'] = $url;
         $this->iAmOnASimpleProductPage();
@@ -342,8 +348,17 @@ class ProductContext extends ProductFixture
     public function theProductIsInStock()
     {
         $stockItem = Mage::getModel('cataloginventory/stock_item')->loadByProduct($this->getTheProduct()->getId());
+        $stockItem->assignProduct($this->getTheProduct());
         $stockItem->setIsInStock(1);
         $stockItem->setQty(100);
+        $stockItem->setData('stock_id', 1);
+        $stockItem->setData('store_id', 1);
+        $stockItem->setData('manage_stock', 1);
+        $stockItem->setData('use_config_manage_stock', 0);
+        $stockItem->setData('min_sale_qty', 1);
+        $stockItem->setData('use_config_min_sale_qty', 0);
+        $stockItem->setData('max_sale_qty', 1000);
+        $stockItem->setData('use_config_max_sale_qty', 0);
         $stockItem->save();
     }
 

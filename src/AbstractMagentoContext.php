@@ -6,7 +6,6 @@ use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\MinkExtension\Context\MinkContext;
 use Behat\MinkExtension\Context\RawMinkContext;
 use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
-use EdmondsCommerce\BehatFakerContext\FakerContext;
 use EdmondsCommerce\BehatHtmlContext\HTMLContext;
 use EdmondsCommerce\BehatHtmlContext\RedirectionContext;
 use EdmondsCommerce\BehatJavascriptContext\JavascriptEventsContext;
@@ -16,6 +15,11 @@ use Mage_Core_Model_Store;
 
 abstract class AbstractMagentoContext extends RawMinkContext implements Context, SnippetAcceptingContext
 {
+    /**
+     * Overrides the default base url
+     * @var string
+     */
+    private static $baseUrl;
 
     /** @var  array */
     protected static $_magentoSetting;
@@ -82,6 +86,36 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
         }
         self::$_magentoSetting = $magentoSetting;
         self::_loadMageFile();
+    }
+
+    public function getBaseUrl()
+    {
+        return self::$baseUrl;
+    }
+
+    public function setBaseUrl(string $url)
+    {
+        self::$baseUrl = $url;
+        return $this;
+    }
+
+    /**
+     * Overrides default path visit
+     * Falls back to normal behaviour if not override is set
+     *
+     * @param string $path
+     *
+     * @return string
+     */
+    public function locatePath($path)
+    {
+        if (self::$baseUrl === null)
+        {
+            return parent::locatePath($path);
+        }
+        $startUrl = rtrim($this->getBaseUrl(), '/') . '/';
+
+        return 0 !== strpos($path, 'http') ? $startUrl . ltrim($path, '/') : $path;
     }
 
     /**
