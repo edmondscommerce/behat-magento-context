@@ -220,4 +220,42 @@ class AdminContext extends AdminFixture
         $this->getSession()->getPage()->find('css', $firstOrder)->click();
     }
 
+
+    /**
+     * @Given /^I disable form key validation$/
+     */
+    public function iDisableFormKeyValidation()
+    {
+        $path = 'admin/security/use_form_key';
+        Mage::app()->getStore(0)->setConfig($path, '0');
+    }
+
+    /**
+     * @Given /^I enable form key validation$/
+     */
+    public function iEnableFormKeyValidation()
+    {
+        $path = 'admin/security/use_form_key';
+        Mage::app()->getStore(0)->setConfig($path, '1');
+    }
+
+    /**
+     * @Given /^I am on admin page ([^ ]+)$/
+     */
+    public function iAmOnAdminPage($path)
+    {
+        $params = ['_type' => \Mage_Core_Model_Store::URL_TYPE_WEB];
+
+        $adminUrl = Mage::helper('adminhtml')->getUrl($path, $params);
+
+        if (is_null($adminUrl)) {
+            throw new Exception('Credit balance page not found.');
+        }
+
+        // URL keys were stopping admin pages loading.
+        $this->iDisableFormKeyValidation();
+        $this->getSession()->visit($adminUrl);
+        $this->iEnableFormKeyValidation();
+    }
+
 }

@@ -19,11 +19,10 @@ class CustomerContext extends CustomerFixture
     public function thereIsACustomer($email, $password)
     {
         $this->createCustomer($email, $password);
-        $customer       = $this->_customer;
+        $customer = $this->_customer;
         $customerQuotes = Mage::getModel('sales/quote')->getCollection()
             ->addFieldToFilter('customer_id', $customer->getId());
-        foreach ($customerQuotes as $quote)
-        {
+        foreach ($customerQuotes as $quote) {
             $quote->delete();
         }
     }
@@ -38,8 +37,7 @@ class CustomerContext extends CustomerFixture
      */
     public function theCustomerHasAnAttributeOf($attributeName, $attributeValue)
     {
-        if (is_null($this->_customer))
-        {
+        if (is_null($this->_customer)) {
             throw new Exception('The customer has not been set');
         }
         $customer = $this->_customer;
@@ -52,8 +50,7 @@ class CustomerContext extends CustomerFixture
      */
     public function iShouldBeLoggedIn()
     {
-        if (!Mage::getSingleton('customer/session')->isLoggedIn())
-        {
+        if (!Mage::getSingleton('customer/session')->isLoggedIn()) {
             throw new Exception('I am not logged in when I should be');
         }
     }
@@ -104,25 +101,20 @@ class CustomerContext extends CustomerFixture
 
         //Override the default login button click if config set
         $loginXpath = self::getMagentoConfigValue('loginXpath');
-        if ($loginXpath !== null)
-        {
+        if ($loginXpath !== null) {
             $nodes = $this->getSession()->getPage()->findAll('xpath', $loginXpath);
-            if (empty($nodes))
-            {
+            if (empty($nodes)) {
                 throw new ExpectationException('Could not find log in button with Xpath: ' . $loginXpath, $this->getSession()->getDriver());
             }
             $clicked = false;
-            foreach ($nodes as $node)
-            {
-                if ($node && $node->isVisible())
-                {
+            foreach ($nodes as $node) {
+                if ($node && $node->isVisible()) {
                     $node->click();
                     $clicked = true;
                     break;
                 }
             }
-            if (!$clicked)
-            {
+            if (!$clicked) {
                 throw new ExpectationException('Could not find a visible log in button with Xpath: ' . $loginXpath, $this->getSession()->getDriver());
             }
         }
@@ -143,8 +135,7 @@ class CustomerContext extends CustomerFixture
      */
     public function iAmLoggedIn()
     {
-        if (is_null($this->_customerEmail) || is_null($this->_customerPassword))
-        {
+        if (is_null($this->_customerEmail) || is_null($this->_customerPassword)) {
             throw new \Exception('You must create the customer before using this step');
         }
         $this->visitPath('/');
@@ -152,15 +143,12 @@ class CustomerContext extends CustomerFixture
         $text = $this->getSession()->getPage()->getText();
 
         $loginCheckXpath = self::getMagentoConfigValue('loginCheckXpath');
-        if (null === $loginCheckXpath)
-        {
+        if (null === $loginCheckXpath) {
             //Use the default behaviour, look for the login text
-            if (false !== strpos($text, 'Hello, Behat Customer!'))
-            {
+            if (false !== strpos($text, 'Hello, Behat Customer!')) {
                 return;
             }
-        } else
-        {
+        } else {
             //Search using the Xpath, if a node is returned then we are logged in
             $this->_html->findOneOrFail('xpath', $loginCheckXpath, 'Unable to login, login check failed');
         }
@@ -194,43 +182,36 @@ class CustomerContext extends CustomerFixture
     {
         //Need to extract the totals, find the invoice table
         $comparisonTable = $comparisonTable->getRowsHash();
-        $xpath           = '//table[contains(@id, "my-invoice-table")]/tfoot';
+        $xpath = '//table[contains(@id, "my-invoice-table")]/tfoot';
 
-        $invoiceTables = array_map(function (NodeElement $element)
-        {
+        $invoiceTables = array_map(function (NodeElement $element) {
             return $this->_html->getTable($element);
         }, $this->_html->findAllOrFail('xpath', $xpath));
 
 
         //Map the values
         $totals = [];
-        foreach ($invoiceTables as $tableData)
-        {
+        foreach ($invoiceTables as $tableData) {
             $tableDataTotal = [];
-            foreach ($tableData as $datum)
-            {
+            foreach ($tableData as $datum) {
                 $tableDataTotal[$datum[0]] = $datum[1];
             }
             $totals[] = $tableDataTotal;
         }
 
-        foreach ($totals as $totalTable)
-        {
+        foreach ($totals as $totalTable) {
             $e = null;
-            try
-            {
+            try {
                 $this->compareTableToInvoiceTable($comparisonTable, $totalTable);
                 //We passed if we got to this point, otherwise we'll check remaining (incorrect) tables and fail
                 return;
-            } catch (ExpectationException $e)
-            {
+            } catch (ExpectationException $e) {
                 //One row didn't get a match, skip the rest of the table
                 continue;
             }
         }
 
-        if ($e instanceof Exception)
-        {
+        if ($e instanceof Exception) {
             throw $e;
         }
     }
@@ -244,17 +225,77 @@ class CustomerContext extends CustomerFixture
     public function compareTableToInvoiceTable(array $comparisonTable, $invoiceTableTotal)
     {
         //Compare with the given table
-        foreach ($comparisonTable as $key => $item)
-        {
-            if (!isset($invoiceTableTotal[$key]))
-            {
+        foreach ($comparisonTable as $key => $item) {
+            if (!isset($invoiceTableTotal[$key])) {
                 throw new ExpectationException('Could not find total ' . $key, $this->getSession()->getDriver());
             }
             $value = $invoiceTableTotal[$key];
-            if ($value !== $item)
-            {
+            if ($value !== $item) {
                 throw new ExpectationException('Total for ' . $key . ' (' . $invoiceTableTotal[$key] . ') did not match ' . $item, $this->getSession()->getDriver());
             }
         }
+    }
+
+    /**
+     * @When /^I add a second address$/
+     */
+    public function iAddASecondAddress()
+    {
+        $this->createCustomerAddress();
+    }
+
+    protected function storeCodeToId($code)
+    {
+        $website = Mage::getResourceModel('core/website_collection')
+            ->addFieldToFilter('code', $code)
+            ->load()
+            ->getFirstItem();
+
+        if (null === $website->getId()) {
+            throw new \InvalidArgumentException("No website found for store code '$code'");
+        }
+
+        return $website->getId();
+    }
+
+    /**
+     * @When There are no additional addresses for :customer_email at store :store_code
+     */
+    public function thereAreNoAdditionalAddressesForAtStore($customerEmail, $storeCode)
+    {
+        $websiteId = $this->storeCodeToId($storeCode);
+
+        $customer = Mage::getModel('customer/customer')
+            ->setWebsiteId($websiteId)
+            ->loadByEmail($customerEmail);
+
+        $addresses = $customer->getAddresses();
+        $billing   = $customer->getDefaultBillingAddress();
+        $shipping  = $customer->getDefaultShippingAddress();
+
+        if (count($addresses) > 0 && false === $billing) {
+            throw new \RuntimeException("No billing address found for '$customerEmail'");
+        }
+
+        if (count($addresses) > 0 && false === $shipping) {
+            throw new \RuntimeException("No shipping address found for '$customerEmail'");
+        }
+
+        foreach ($addresses as $address) {
+            if ($address->getId() !== $billing->getId() && $address->getId() !== $shipping->getId()) {
+                $address->delete();
+            }
+        }
+    }
+
+    /**
+     * @Given /^I generate a reset password link$/
+     */
+    public function iGenerateAResetPasswordLink()
+    {
+        $customer = $this->getCustomer();
+
+
+
     }
 }

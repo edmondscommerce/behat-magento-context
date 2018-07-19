@@ -7,18 +7,19 @@ use Exception;
 
 class CategoryContext extends CategoryFixture implements Context, SnippetAcceptingContext
 {
+
+    const FOUND_PRODUCT_NAME_ATTRIBUTE = 'productNameSelector';
+
     /**
      * @Then I should see the products in a :arg1
      */
     public function iShouldSeeTheProductsInA($arg1)
     {
-        if ($arg1 === 'grid')
-        {
+        if ($arg1 === 'grid') {
             $this->iShouldSeeTheProductsInAGrid();
         }
 
-        if ($arg1 === 'list')
-        {
+        if ($arg1 === 'list') {
             $this->iShouldSeeTheProductsInAList();
         }
 
@@ -47,9 +48,22 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
      */
     public function iShouldSeeProductsOnThePage($arg1)
     {
-        $productNames = $this->getSession()->getPage()->findAll('css', '.product-name');
+
+        if (isset(self::$_magentoSetting[self::FOUND_PRODUCT_NAME_ATTRIBUTE])) {
+            $nameElement = self::$_magentoSetting[self::FOUND_PRODUCT_NAME_ATTRIBUTE];
+        } else {
+            $nameElement = '.product-image';
+        }
+        $productNames = $this->getSession()->getPage()->findAll('css', $nameElement);
         $count = count($productNames);
-        if ($count !== $arg1)
+
+        if ($count == 0) {
+
+            $productNames = $this->getSession()->getPage()->findAll('css', '.product-image');
+            $count = count($productNames);
+        }
+
+        if ($count !== (int)$arg1)
         {
             throw new Exception('There are ' . $count . ' products on the page but we expected ' . $arg1);
         }
@@ -60,13 +74,11 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
      */
     public function iSelectThe($arg1)
     {
-        if ($arg1 === 'grid')
-        {
+        if ($arg1 === 'grid') {
             $this->iChangeProductDisplayModeToGrid();
         }
 
-        if ($arg1 === 'list')
-        {
+        if ($arg1 === 'list') {
             $this->iChangeProductDisplayModeToList();
         }
 
@@ -100,7 +112,7 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
 
         $limiter->setValue($arg1);
     }
-    
+
     /**
      * @Given I am testing a category with an ID of :arg1
      */
@@ -156,6 +168,6 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
      */
     public function iAmOnTheCategoryPage()
     {
-        
+
     }
 }
