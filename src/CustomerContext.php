@@ -145,7 +145,8 @@ class CustomerContext extends CustomerFixture
         $loginCheckXpath = self::getMagentoConfigValue('loginCheckXpath');
         if (null === $loginCheckXpath) {
             //Use the default behaviour, look for the login text
-            if (false !== strpos($text, 'Hello, Behat Customer!')) {
+            $customerName = $this->_customer->getName();
+            if (false !== strpos($text, 'Hello, ' . $customerName . '!')) {
                 return;
             }
         } else {
