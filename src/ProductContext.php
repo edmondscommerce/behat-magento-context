@@ -236,6 +236,25 @@ class ProductContext extends ProductFixture
     }
 
     /**
+     * @Then /^There is a (?:|.+ )virtual product with an SKU of (.*)$/i
+     */
+    public function iAmTestingAVirtualProductWithAnSkuOfTest($sku)
+    {
+        $store = Mage::app()->getStore()->getStoreId();
+        $product = Mage::getModel('catalog/product')->loadByAttribute('sku', $sku);
+        Mage::app()->setCurrentStore($store);
+        if(is_object($product) && !is_null($product->getId())) {
+            $this->_productModel = $product;
+            $this->_productId = $product->getId();
+
+            return;
+        }
+        $productId = $this->getEmptyProductId(5000);
+        $this->_productId = $productId;
+        $this->_productModel = $this->createProduct($productId, ['sku' => $sku], 'virtual');
+    }
+
+    /**
      * @Given /^The product has a (.*) of (.*)$/i
      */
     public function theProductHasAnAttributeOf($property, $value)
@@ -412,6 +431,18 @@ class ProductContext extends ProductFixture
 
         $stockItem->setIsInStock(0);
         $stockItem->setQty(0);
+        $stockItem->save();
+    }
+
+    /**
+     * @Given /^The virtual product has a stock of (\d+)$/
+     */
+    public function theVirtualProductHasAStockOf($arg1)
+    {
+        $stockItem = Mage::getModel('cataloginventory/stock_item')->loadByProduct($this->getTheProduct()->getId());
+
+        $stockItem->setIsInStock(1);
+        $stockItem->setQty($arg1);
         $stockItem->save();
     }
 }

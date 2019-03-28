@@ -21,13 +21,15 @@ class ProductFixture extends AbstractMagentoContext
     protected $_storeId;
 
     /**
-     * @param       $productId
-     * @param array $data
+     * @param        $productId
+     * @param array  $data
+     *
+     * @param string $type
      *
      * @return \EdmondsCommerce_FeaturedProducts_Model_Catalog_Product|Mage_Catalog_Model_Product
      * @throws Exception
      */
-    public function createProduct($productId, array $data)
+    public function createProduct($productId, array $data, $type = 'simple')
     {
         $this->_productId = $productId;
         $product          = Mage::getModel('catalog/product')->load($productId);
@@ -41,7 +43,7 @@ class ProductFixture extends AbstractMagentoContext
         {
             $product->setId($productId);
         }
-        $requiredAttribute = $this->_getRequiredProductAttributes();
+        $requiredAttribute = $this->_getRequiredProductAttributes($type);
         foreach ($requiredAttribute as $key => $value)
         {
             $product->setData($key, $value);
@@ -205,22 +207,22 @@ class ProductFixture extends AbstractMagentoContext
         return $product->getData($attribute);
     }
 
-    protected function _getRequiredProductAttributes()
+    protected function _getRequiredProductAttributes($type = 'simple')
     {
         return [
             'website_ids'       => Mage::getResourceModel('core/website_collection')->getAllIds(),
             'attribute_set_id'  => Mage::getModel('catalog/product')->getDefaultAttributeSetId(),
-            'type_id'           => 'simple',
+            'type_id'           => $type,
             'created_at'        => strtotime('now'),
-            'sku'               => 'behat_product',
-            'name'              => 'Behat Product',
+            'sku'               => 'behat_product_'.$type,
+            'name'              => 'Behat Product '.$type,
             'weight'            => 4.0000,
             'status'            => \Mage_Catalog_Model_Product_Status::STATUS_ENABLED,
             'tax_class_id'      => $this->_getBehatTaxClass(),
             'visibility'        => Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH,
             'price'             => 11.22,
             'cost'              => 22.33,
-            'url_key'           => 'behat-product',
+            'url_key'           => 'behat-product-'.$type,
             'description'       => 'This is a product used for Behat Testing',
             'short_description' => 'This is a product used for Behat Testing',
             'stock_data'        => [
