@@ -21,6 +21,11 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
      */
     private static $baseUrl;
 
+    /**
+     * @var boolean
+     */
+    protected static $isBlackBox;
+
     /** @var  array */
     protected static $_magentoSetting;
     /** @var CartContext */
@@ -82,6 +87,7 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
 
         if(isset($magentoSetting['blackbox']) && $magentoSetting['blackbox'] === true)
         {
+            self::$isBlackBox = true;
             echo "Blackbox mode enabled, skipping loading of Magento class, some steps will not work as expected!";
             return;
         }
@@ -145,6 +151,11 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
      */
     protected static function _loadMageFile()
     {
+        if(self::$isBlackBox)
+        {
+            return;
+        }
+
         if (!class_exists('\Mage'))
         {
             $autoLoaders = spl_autoload_functions();
