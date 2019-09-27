@@ -79,11 +79,24 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
             throw new \Exception('You must include the magentoSetting in the behat.yml file');
         }
         $magentoSetting = $parameters['magentoSettings'];
+
+        if(isset($magentoSetting['blackbox']) && $magentoSetting['blackbox'] === true)
+        {
+            echo "Blackbox mode enabled, skipping loading of Magento class, some steps will not work as expected!";
+            return;
+        }
+
+        if(!isset($magentoSetting['pathToMage']))
+        {
+            throw new \Exception('Could not read Mage path from Magento config array: pathToMage not defined');
+        }
+
         $pathToMage     = $magentoSetting['pathToMage'];
         if (!file_exists($pathToMage))
         {
             throw new \Exception('You must provide a valid pathToMage path in the behat.yml file');
         }
+
         self::$_magentoSetting = $magentoSetting;
         self::_loadMageFile();
     }
