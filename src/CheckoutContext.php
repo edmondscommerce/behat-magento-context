@@ -29,7 +29,9 @@ class CheckoutContext extends AbstractMagentoContext
      */
     public function iFillInTheBillingAddressForm()
     {
-        $billingForm = $this->getSession()->getPage()->find('css', '#billing_address');
+        $billingSelector = self::$_magentoSetting['checkout']['billAddressFormSelector'];
+
+        $billingForm = $this->getSession()->getPage()->find('css', $billingSelector);
         $inputs      = $billingForm->findAll('css', 'input');
         foreach ($inputs as $input) {
             switch ($input->getAttribute('name')) {
@@ -132,7 +134,7 @@ class CheckoutContext extends AbstractMagentoContext
     {
         $this->getSession()->getPage()->hasContent('Your order has been received');
     }
-    
+
     /**
      * @Given I am at the checkout
      */

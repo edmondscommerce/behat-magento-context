@@ -162,12 +162,4 @@ class CategoryContext extends CategoryFixture implements Context, SnippetAccepti
     {
         throw new PendingException();
     }
-
-    /**
-     * @Given /^I am on the category page$/
-     */
-    public function iAmOnTheCategoryPage()
-    {
-
-    }
 }
