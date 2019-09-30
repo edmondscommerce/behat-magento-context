@@ -4,12 +4,14 @@ use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\ExpectationException;
+use ClassesWithParents\G;
 use Exception;
+use Faker\Factory;
+use Faker\Generator;
 use Mage;
 
 class CustomerContext extends CustomerFixture
 {
-
     /**
      * @param $email
      * @param $password
@@ -19,9 +21,9 @@ class CustomerContext extends CustomerFixture
     public function thereIsACustomer($email, $password)
     {
         $this->createCustomer($email, $password);
-        $customer = $this->_customer;
+        $customer       = $this->_customer;
         $customerQuotes = Mage::getModel('sales/quote')->getCollection()
-            ->addFieldToFilter('customer_id', $customer->getId());
+                              ->addFieldToFilter('customer_id', $customer->getId());
         foreach ($customerQuotes as $quote) {
             $quote->delete();
         }
@@ -69,7 +71,7 @@ class CustomerContext extends CustomerFixture
      */
     public function iClickOnTheAccountLink()
     {
-        $el = $this->getSession()->getPage()->find('named', array('content', 'My Account'));
+        $el = $this->getSession()->getPage()->find('named', ['content', 'My Account']);
 
         $el->click();
     }
@@ -79,7 +81,7 @@ class CustomerContext extends CustomerFixture
      */
     public function iClickOnTheLogInLink()
     {
-        $el = $this->getSession()->getPage()->find('named', array('content', 'Log In'));
+        $el = $this->getSession()->getPage()->find('named', ['content', 'Log In']);
 
         $el->click();
     }
@@ -89,7 +91,7 @@ class CustomerContext extends CustomerFixture
      *
      * This is used to test the login method
      *
-     * @param $email - The email to log in with
+     * @param $email    - The email to log in with
      * @param $password - The password to log in with
      *
      * @throws Exception
@@ -104,7 +106,8 @@ class CustomerContext extends CustomerFixture
         if ($loginXpath !== null) {
             $nodes = $this->getSession()->getPage()->findAll('xpath', $loginXpath);
             if (empty($nodes)) {
-                throw new ExpectationException('Could not find log in button with Xpath: ' . $loginXpath, $this->getSession()->getDriver());
+                throw new ExpectationException('Could not find log in button with Xpath: ' . $loginXpath,
+                                               $this->getSession()->getDriver());
             }
             $clicked = false;
             foreach ($nodes as $node) {
@@ -115,7 +118,8 @@ class CustomerContext extends CustomerFixture
                 }
             }
             if (!$clicked) {
-                throw new ExpectationException('Could not find a visible log in button with Xpath: ' . $loginXpath, $this->getSession()->getDriver());
+                throw new ExpectationException('Could not find a visible log in button with Xpath: ' . $loginXpath,
+                                               $this->getSession()->getDriver());
             }
         }
 
@@ -183,11 +187,12 @@ class CustomerContext extends CustomerFixture
     {
         //Need to extract the totals, find the invoice table
         $comparisonTable = $comparisonTable->getRowsHash();
-        $xpath = '//table[contains(@id, "my-invoice-table")]/tfoot';
+        $xpath           = '//table[contains(@id, "my-invoice-table")]/tfoot';
 
         $invoiceTables = array_map(function (NodeElement $element) {
             return $this->_html->getTable($element);
-        }, $this->_html->findAllOrFail('xpath', $xpath));
+        },
+            $this->_html->findAllOrFail('xpath', $xpath));
 
 
         //Map the values
@@ -204,6 +209,7 @@ class CustomerContext extends CustomerFixture
             $e = null;
             try {
                 $this->compareTableToInvoiceTable($comparisonTable, $totalTable);
+
                 //We passed if we got to this point, otherwise we'll check remaining (incorrect) tables and fail
                 return;
             } catch (ExpectationException $e) {
@@ -219,8 +225,10 @@ class CustomerContext extends CustomerFixture
 
     /**
      * Compares two table arrays
+     *
      * @param array $comparisonTable
-     * @param $invoiceTableTotals
+     * @param       $invoiceTableTotals
+     *
      * @throws ExpectationException
      */
     public function compareTableToInvoiceTable(array $comparisonTable, $invoiceTableTotal)
@@ -232,7 +240,12 @@ class CustomerContext extends CustomerFixture
             }
             $value = $invoiceTableTotal[$key];
             if ($value !== $item) {
-                throw new ExpectationException('Total for ' . $key . ' (' . $invoiceTableTotal[$key] . ') did not match ' . $item, $this->getSession()->getDriver());
+                throw new ExpectationException('Total for ' .
+                                               $key .
+                                               ' (' .
+                                               $invoiceTableTotal[$key] .
+                                               ') did not match ' .
+                                               $item, $this->getSession()->getDriver());
             }
         }
     }
@@ -245,12 +258,73 @@ class CustomerContext extends CustomerFixture
         $this->createCustomerAddress();
     }
 
+    /**
+     * @Given /^I am not logged in$/
+     * @throws ExpectationException
+     */
+    public function iAmNotLoggedIn()
+    {
+        $this->visitPath('/');
+
+        $loginXpath = self::getMagentoConfigValue('loginXpath');
+
+        if ($loginXpath === null) {
+            throw new ExpectationException('Login Xpath not set!', $this->getSession()->getDriver());
+        }
+
+        // Find the login button
+        $this->_html->findAllOrFail('xpath', $loginXpath);
+    }
+
+    /**
+     * @When /^I go to the customer registration page$/
+     */
+    public function iGoToTheCustomerRegistrationPage()
+    {
+        $this->visitPath('/customer/account/create');
+    }
+
+    /**
+     * @When /^fill in the registration form$/
+     */
+    public function fillInTheRegistrationForm(\Behat\Gherkin\Node\TableNode $table)
+    {
+        $generator = Factory::create();
+        $fakerData = $this->getRegistrationFormFakerData();
+        foreach($table->getRowsHash() as $field => $value)
+        {
+            if($value === "" || $value === null)
+            {
+                $value = isset($fakerData[$field]) ? $fakerData[$field] : $generator->sentence;
+            }
+
+            $this->_mink->fillField($field, $value);
+        }
+    }
+
+    /**
+     * @param string $fieldName
+     */
+    private function getRegistrationFormFakerData()
+    {
+        $generator = Factory::create();
+        $password = $generator->password;
+
+        return [
+            'firstname' => $generator->firstName,
+            'lastname' => $generator->lastName,
+            'email_address' => $generator->email,
+            'password' => $password,
+            'confirmation' => $password,
+        ];
+    }
+
     protected function storeCodeToId($code)
     {
         $website = Mage::getResourceModel('core/website_collection')
-            ->addFieldToFilter('code', $code)
-            ->load()
-            ->getFirstItem();
+                       ->addFieldToFilter('code', $code)
+                       ->load()
+                       ->getFirstItem();
 
         if (null === $website->getId()) {
             throw new \InvalidArgumentException("No website found for store code '$code'");
@@ -267,8 +341,8 @@ class CustomerContext extends CustomerFixture
         $websiteId = $this->storeCodeToId($storeCode);
 
         $customer = Mage::getModel('customer/customer')
-            ->setWebsiteId($websiteId)
-            ->loadByEmail($customerEmail);
+                        ->setWebsiteId($websiteId)
+                        ->loadByEmail($customerEmail);
 
         $addresses = $customer->getAddresses();
         $billing   = $customer->getDefaultBillingAddress();
@@ -295,7 +369,6 @@ class CustomerContext extends CustomerFixture
     public function iGenerateAResetPasswordLink()
     {
         $customer = $this->getCustomer();
-
 
 
     }

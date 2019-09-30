@@ -84,7 +84,7 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
             throw new \Exception('You must include the magentoSetting in the behat.yml file');
         }
         $magentoSetting = $parameters['magentoSettings'];
-
+        self::$_magentoSetting = $magentoSetting;
         if(isset($magentoSetting['blackbox']) && $magentoSetting['blackbox'] === true)
         {
             self::$isBlackBox = true;
@@ -103,7 +103,6 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
             throw new \Exception('You must provide a valid pathToMage path in the behat.yml file');
         }
 
-        self::$_magentoSetting = $magentoSetting;
         self::_loadMageFile();
     }
 
