@@ -1,6 +1,9 @@
 <?php namespace EdmondsCommerce\BehatMagentoOneContext;
 
 use Behat\Behat\Tester\Exception\PendingException;
+use Behat\Gherkin\Node\TableNode;
+use Behat\Mink\Element\NodeElement;
+use Behat\Mink\Exception\ExpectationException;
 use EdmondsCommerce\BehatFakerContext\FakerContext;
 use Exception;
 
@@ -32,9 +35,16 @@ class CheckoutContext extends AbstractMagentoContext
         $billingSelector = self::$_magentoSetting['checkout']['billAddressFormSelector'];
 
         $billingForm = $this->getSession()->getPage()->find('css', $billingSelector);
-        $inputs      = $billingForm->findAll('css', 'input');
+        $inputs      = $billingForm->findAll('css', 'input,select');
         foreach ($inputs as $input) {
-            switch ($input->getAttribute('name')) {
+            $inputName = $input->getAttribute('name');
+
+            // Skip non visible elements
+            if (!$input->isVisible()) {
+                continue;
+            }
+
+            switch ($inputName) {
                 case 'billing[firstname]':
                     $value = 'Behat';
                     break;
@@ -48,7 +58,11 @@ class CheckoutContext extends AbstractMagentoContext
                     $value = '0123456789';
                     break;
                 case 'billing[street][1]':
+                case 'billing[street][]':
                     $value = '123 Main Street';
+                    break;
+                case 'billing[region_id]':
+                    $value = 1;
                     break;
                 case 'billing[city]':
                     $value = 'Leeds';
@@ -62,6 +76,7 @@ class CheckoutContext extends AbstractMagentoContext
             if ($value === false) {
                 continue;
             }
+
             $input->setValue($value);
         }
     }
@@ -72,7 +87,7 @@ class CheckoutContext extends AbstractMagentoContext
     public function iFillInTheShippingAddressForm()
     {
         $formWrapper = $this->getSession()->getPage()->find('css', '#shipping_address_list');
-        $fieldValues = array(
+        $fieldValues = [
             'shipping[firstname]'  => 'FirstName',
             'shipping[lastname]'   => 'LastName',
             'shipping[telephone]'  => '0123456789',
@@ -82,23 +97,20 @@ class CheckoutContext extends AbstractMagentoContext
             'shipping[city]'       => 'City',
             'shipping[postcode]'   => 'AB12 CDE',
             'shipping[region]'     => 'The Shire',
-        );
+        ];
 
-        $optionalFieldValues = array(
-            'shipping[company]'    => 'The Box Company',
-            'shipping[fax]'        => '9876543210'
-        );
+        $optionalFieldValues = [
+            'shipping[company]' => 'The Box Company',
+            'shipping[fax]'     => '9876543210',
+        ];
 
-        foreach ($fieldValues as $name => $value)
-        {
+        foreach ($fieldValues as $name => $value) {
             $formWrapper->find('css', "input[name='$name'], select[name='$name']")->setValue($value);
         }
 
-        foreach($optionalFieldValues as $name => $value)
-        {
+        foreach ($optionalFieldValues as $name => $value) {
             $input = $formWrapper->find('css', "input[name='$name'], select[name='$name']");
-            if($input)
-            {
+            if ($input) {
                 $input->setValue($value);
             }
         }
@@ -106,14 +118,15 @@ class CheckoutContext extends AbstractMagentoContext
 
     /**
      * TODO: Cross check between onepagecheckout and onestepcheckout
+     *
      * @Then The quantity in the cart should be :arg1
      */
     public function theQuantityInTheCartShouldBe($arg1)
     {
-        $fieldValue = $this->getSession()->getPage()->find('css', '.onestepcheckout-summary td.qty input.qtyinput')->getValue();
+        $fieldValue =
+            $this->getSession()->getPage()->find('css', '.onestepcheckout-summary td.qty input.qtyinput')->getValue();
 
-        if ($arg1 != $fieldValue)
-        {
+        if ($arg1 != $fieldValue) {
             throw new Exception('The expected quantity was ' . $arg1 . ' but found ' . $fieldValue);
         }
     }
@@ -143,4 +156,61 @@ class CheckoutContext extends AbstractMagentoContext
         throw new PendingException();
     }
 
+    /**
+     * @Given /^I continue to the next checkout step$/
+     * @throws ExpectationException
+     */
+    public function iContinueToTheNextCheckoutStep()
+    {
+        $buttons = $this->_html->findAllOrFail('xpath', '//button[contains(., "Continue")]');
+
+        foreach ($buttons as $button) {
+            if ($button->isVisible()) {
+                $button->press();
+                $this->_jsEvents->iWaitForAjaxToFinish();
+
+                return;
+            }
+        }
+
+        throw new ExpectationException(
+            'Could not find continue button for checkout step', $this->getSession()
+        );
+    }
+
+    /**
+     * @Given /^I select the "([^"]*)" shipping method$/
+     */
+    public function iSelectTheShippingMethod($method)
+    {
+        $method = $this->_html->findOneOrFail(
+            'xpath',
+            sprintf('//form[@id="co-shipping-method-form"]//dt[text()="%s"]/following-sibling::dd[1]//input', $method)
+        );
+
+        $method->click();
+    }
+
+    /**
+     * @Given /^I choose the "([^"]*)" payment method$/
+     * @throws ExpectationException
+     */
+    public function iChooseThePaymentMethod($method)
+    {
+        $xpath = sprintf('//form[@id="co-payment-form"]//dt/label[contains(., "%s")]', $method);
+
+        $method = $this->_html->findOneOrFail('xpath', $xpath);
+
+        try {
+            $radioButton = $this->_html->findOrFailFromNode($method, 'xpath', '/..//input');#
+
+            if($radioButton->isVisible()) {
+                $radioButton->click();
+            }
+        } catch (ExpectationException $exception)
+        {
+            // Could not find the radio button, assuming only this method is available
+            return;
+        }
+    }
 }

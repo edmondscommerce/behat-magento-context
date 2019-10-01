@@ -303,6 +303,30 @@ class CustomerContext extends CustomerFixture
     }
 
     /**
+     * @When /^I make sure I am logged out$/
+     */
+    public function iMakeSureIAmLoggedOut()
+    {
+        $this->visitPath('/customer/account/logout/');
+    }
+
+    /**
+     * @Given /^I go to the customer login page$/
+     */
+    public function iGoToTheCustomerLoginPage()
+    {
+        $this->visitPath('customer/account/login');
+    }
+
+    /**
+     * @Given /^I fill in my login details$/
+     */
+    public function iFillInMyLoginDetails(TableNode $table)
+    {
+        $this->_mink->fillFields($table);
+    }
+
+    /**
      * @param string $fieldName
      */
     private function getRegistrationFormFakerData()
