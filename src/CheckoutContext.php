@@ -23,9 +23,33 @@ class CheckoutContext extends AbstractMagentoContext
         $this->_cart->iOpenTheMiniCart();
         $this->_mink->assertPageContainsText('Edit Item');
         $this->_mink->assertPageNotContainsText('You have no items in your shopping cart.');
-        $this->_html->iClickOnTheElement('.minicart a');
+        $this->_html->iClickOnTheElement('.minicart a.checkout-button');
         $this->_jsEvents->iWaitForDocumentReady();
     }
+
+    /**
+     * @Then I go to the cart
+     */
+    public function iGoToTheCart()
+    {
+        $this->_cart->iOpenTheMiniCart();
+        $this->_mink->assertPageContainsText('Edit Item');
+        $this->_mink->assertPageNotContainsText('You have no items in your shopping cart.');
+        $this->_html->iClickOnTheElement('a.cart-link');
+        $this->_jsEvents->iWaitForDocumentReady();
+    }
+
+    /**
+     * @Then /^I should see the css selector "([^"]*)"$/
+     * @Then /^I should see the CSS selector "([^"]*)"$/
+     */
+    public function iShouldSeeTheCssSelector($css_selector) {
+        $element = $this->getSession()->getPage()->find("css", $css_selector);
+        if (empty($element)) {
+            throw new \Exception(sprintf("The page '%s' does not contain the css selector '%s'", $this->getSession()->getCurrentUrl(), $css_selector));
+        }
+    }
+
 
     /**
      * @When I fill in the Billing Address form
@@ -68,9 +92,12 @@ class CheckoutContext extends AbstractMagentoContext
                     $value = 'Leeds';
                     break;
                 case 'billing[postcode]':
-                    $value = 'LS1 2AB';
+                    $value = 'bd17 7bd';
                     break;
-                default:
+                case 'billing[country_id]':
+                    $value = 'GB';
+                    break;
+                    default:
                     $value = false;
             }
             if ($value === false) {
