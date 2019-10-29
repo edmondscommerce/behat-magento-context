@@ -32,6 +32,15 @@ class AdminContext extends AdminFixture
     }
 
     /**
+     * @Given /^There is an admin login with username (.*) and password (.*)$/
+     */
+    public function setAdminLoginDetails($userName, $password)
+    {
+        $this->_userName = $userName;
+        $this->_password = $password;
+    }
+
+    /**
      * @Given I log into the admin
      */
     public function iLogInToTheAdmin()
@@ -60,6 +69,41 @@ class AdminContext extends AdminFixture
             $this->iLogInToTheAdmin();
         }
         $ordersUrl = $this->getAdminUrl('adminhtml/sales_order/index');
+        $this->visitPath($ordersUrl);
+        $this->_jsEvents->iWaitForDocumentReady();
+        $this->_mink->assertPageContainsText('Orders');
+    }
+
+    /**
+     * @Given I log into the admin using url
+     * @throws \Exception
+     */
+    public function iLogInToTheAdminUrl()
+    {
+        if ($this->_userName === null || $this->_password === null) {
+            throw new \RuntimeException('You must create the admin user first');
+        }
+
+        $adminUrl = self::$_magentoSetting['AdminUrl'];
+        $this->visitPath($adminUrl);
+        $this->_mink->fillField('username', $this->_userName);
+        $this->_mink->fillField('login', $this->_password);
+        $this->_html->iClickOnTheElement('.form-button');
+        $this->_jsEvents->iWaitForDocumentReady();
+        $this->_mink->assertPageContainsText('Dashboard');
+        $this->_amLoggedIn = true;
+    }
+
+    /**
+     * @When I go to the orders page using url
+     * @throws \Exception
+     */
+    public function iGoToTheOrdersUrlPage()
+    {
+        if ($this->_amLoggedIn === false) {
+            $this->iLogInToTheAdmin();
+        }
+        $ordersUrl = self::$_magentoSetting['AdminUrl'] . '/sales_order/index';
         $this->visitPath($ordersUrl);
         $this->_jsEvents->iWaitForDocumentReady();
         $this->_mink->assertPageContainsText('Orders');
@@ -207,7 +251,7 @@ class AdminContext extends AdminFixture
         $this->visitPath($customerUrl);
         $this->_jsEvents->iWaitForDocumentReady();
         $this->_mink->assertPageContainsText('Behat Customer');
-        
+
     }
 
     /**
