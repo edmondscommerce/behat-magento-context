@@ -11,13 +11,12 @@ class PaypalContext extends AbstractMagentoContext
         $payPalEmail    = self::$_magentoSetting['payPalEmail'];
         $payPalPassword = self::$_magentoSetting['payPalPassword'];
 
-        if ($payPalEmail === null || $payPalPassword === null)
-        {
+        if ($payPalEmail === null || $payPalPassword === null) {
             throw new \RuntimeException('You must set the PayPal settings in the behat.yaml file');
         }
 
         $session = $this->getSession();
-        $name = $session->getPage()->find('css', '#email');
+        $name    = $session->getPage()->find('css', '#email');
         $name->setValue($payPalEmail);
 
         $password = $session->getPage()->find('css', '#password');
@@ -31,6 +30,18 @@ class PaypalContext extends AbstractMagentoContext
      */
     public function iClickPayNow()
     {
-        $this->getSession()->getPage()->find('css', 'input[type="submit"]')->click();
+        // if this payment screen
+        $button = $this->getSession()->getPage()->find('css', 'input[type="submit"]');
+
+        if ($button === null) {
+            // this is select payment source screen
+            $sourceButton = $this->getSession()->getPage()->find('css', '#button button');
+            $sourceButton->click();
+            sleep(5);
+            // now this is payment screen
+            $button = $this->getSession()->getPage()->find('css', 'input[type="submit"]');
+        }
+
+        $button->click();
     }
 }
