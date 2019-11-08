@@ -43,13 +43,24 @@ class CheckoutContext extends AbstractMagentoContext
      * @Then /^I should see the css selector "([^"]*)"$/
      * @Then /^I should see the CSS selector "([^"]*)"$/
      */
-    public function iShouldSeeTheCssSelector($css_selector) {
+    public function iShouldSeeTheCssSelector($css_selector)
+    {
         $element = $this->getSession()->getPage()->find("css", $css_selector);
         if (empty($element)) {
-            throw new \Exception(sprintf("The page '%s' does not contain the css selector '%s'", $this->getSession()->getCurrentUrl(), $css_selector));
+            throw new \Exception(sprintf("The page '%s' does not contain the css selector '%s'",
+                                         $this->getSession()->getCurrentUrl(),
+                                         $css_selector));
         }
     }
 
+    /**
+     * @Given /^I set the purchase order number to "([^"]*)"$/
+     */
+    public function iSetThePurchaseOrderNumberTo($poNumber)
+    {
+        $this->_html->findOneOrFail('named', ['field', 'payment[po_number]'])
+            ->setValue($poNumber);
+    }
 
     /**
      * @When I fill in the Billing Address form
@@ -60,7 +71,7 @@ class CheckoutContext extends AbstractMagentoContext
 
         $billingForm = $this->_html->findOneOrFail('css', $billingSelector);
 
-        $inputs      = $billingForm->findAll('css', 'input,select');
+        $inputs = $billingForm->findAll('css', 'input,select');
         foreach ($inputs as $input) {
             $inputName = $input->getAttribute('name');
 
@@ -82,6 +93,7 @@ class CheckoutContext extends AbstractMagentoContext
                 case 'billing[telephone]':
                     $value = '0123456789';
                     break;
+                case 'billing[street][0]':
                 case 'billing[street][1]':
                 case 'billing[street][]':
                     $value = '123 Main Street';
@@ -98,7 +110,7 @@ class CheckoutContext extends AbstractMagentoContext
                 case 'billing[country_id]':
                     $value = 'GB';
                     break;
-                    default:
+                default:
                     $value = false;
             }
             if ($value === false) {
@@ -116,15 +128,15 @@ class CheckoutContext extends AbstractMagentoContext
     {
         $formWrapper = $this->getSession()->getPage()->find('css', '#shipping_address_list');
         $fieldValues = [
-            'shipping[firstname]'  => 'FirstName',
-            'shipping[lastname]'   => 'LastName',
-            'shipping[telephone]'  => '0123456789',
-            'shipping[street][1]'  => 'Street 1',
-            'shipping[street][2]'  => 'Street 2',
+            'shipping[firstname]' => 'FirstName',
+            'shipping[lastname]' => 'LastName',
+            'shipping[telephone]' => '0123456789',
+            'shipping[street][1]' => 'Street 1',
+            'shipping[street][2]' => 'Street 2',
             'shipping[country_id]' => 'SG',
-            'shipping[city]'       => 'City',
-            'shipping[postcode]'   => 'AB12 CDE',
-            'shipping[region]'     => 'The Shire',
+            'shipping[city]' => 'City',
+            'shipping[postcode]' => 'AB12 CDE',
+            'shipping[region]' => 'The Shire',
         ];
 
         $optionalFieldValues = [
@@ -211,12 +223,33 @@ class CheckoutContext extends AbstractMagentoContext
      */
     public function iSelectTheShippingMethod($method)
     {
-        $method = $this->_html->findOneOrFail(
-            'xpath',
-            sprintf('//form[@id="co-shipping-method-form"]//dt[text()="%s"]/following-sibling::dd[1]//input', $method)
+        $selectors = [
+            // One page checkout (vanilla)
+            '//form[@id="co-shipping-method-form"]//dt[text()="%s"]/following-sibling::dd[1]//input',
+            // One step checkout
+            '//dl[contains(@class,"shipment-methods")]/dd[text()="%s"]/following-sibling::dt//input'
+        ];
+
+        $configuredSelector        = self::$_magentoSetting['checkout']['shippingMethodFormSelector'] ?? null;
+
+        if($configuredSelector !== null)
+        {
+            // Shift on to the beginning to be tried first
+            array_unshift($selectors, $configuredSelector);
+        }
+
+        $selectors = array_map(
+            function ($selector) use ($method) {
+                return sprintf($selector, $method);
+            },
+            $selectors
         );
 
-        $method->click();
+        $button = $this->_html->findOneFromOptionsOrFail(
+            'xpath',
+            $selectors,
+            'Could not identify shipping method input, is it on the page and visible?'
+        )->click();
     }
 
     /**
@@ -225,20 +258,25 @@ class CheckoutContext extends AbstractMagentoContext
      */
     public function iChooseThePaymentMethod($method)
     {
-        $xpath = sprintf('//form[@id="co-payment-form"]//dt/label[contains(., "%s")]', $method);
+        $selectors = [
+            // Vanilla
+            '//form[@id="co-payment-form"]//dt/label[contains(., "%s")]',
+            // OSC
+            '//dl[@id="checkout-payment-method-load"]//dt/label[contains(text(), "%s")]/../input'
+        ];
 
-        $method = $this->_html->findOneOrFail('xpath', $xpath);
 
-        try {
-            $radioButton = $this->_html->findOrFailFromNode($method, 'xpath', '/..//input');#
+        $selectors = array_map(
+            function ($selector) use ($method) {
+                return sprintf($selector, $method);
+            },
+            $selectors
+        );
 
-            if($radioButton->isVisible()) {
-                $radioButton->click();
-            }
-        } catch (ExpectationException $exception)
-        {
-            // Could not find the radio button, assuming only this method is available
-            return;
-        }
+        $method = $this->_html->findOneFromOptionsOrFail(
+            'xpath',
+            $selectors,
+            'Could not identify shipping method input, is it on the page and visible?'
+        )->click();
     }
 }
