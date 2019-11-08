@@ -58,7 +58,8 @@ class CheckoutContext extends AbstractMagentoContext
     {
         $billingSelector = self::$_magentoSetting['checkout']['billAddressFormSelector'];
 
-        $billingForm = $this->getSession()->getPage()->find('css', $billingSelector);
+        $billingForm = $this->_html->findOneOrFail('css', $billingSelector);
+
         $inputs      = $billingForm->findAll('css', 'input,select');
         foreach ($inputs as $input) {
             $inputName = $input->getAttribute('name');
